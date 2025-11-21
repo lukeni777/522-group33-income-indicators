@@ -1,6 +1,6 @@
-# Contributing to DSCI-310_Group-Project_Group8
+# Contributing to DSCI-522-Group33
 
-This document outlines how to propose changes or make contributions to the DSCI-310_Group-Project_Group8 repository. 
+This document outlines how to propose changes or make contributions to the DSCI-522-group33 repository. 
 
 ***Since this is a public repository, if you are not a main owner/contributor of this project, please abstain from making any changes to the main branch to avoid potential conflicts or adding undesirable changes that might disrupt the stability of the exisiting code.***
 
@@ -21,7 +21,7 @@ If your contribution is approved, you can proceed with the pull request process.
 
 ## Code of conduct
 
-By contributing to this project, you are agreeing to abide by our Code of Conduct, which can be found here [Code of Conduct](https://github.com/DSCI-310-2024/DSCI-310_Group-Project_Group8/blob/main/CODE_OF_CONDUCT.md)
+By contributing to this project, you are agreeing to abide by our Code of Conduct, which can be found here [Code of Conduct](insert link to CODE_OF_CONDUCT.md).
 
 ## Attribution 
 
