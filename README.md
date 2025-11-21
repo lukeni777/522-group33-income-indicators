@@ -19,7 +19,7 @@ To replicate our analysis on your machine:
 2. Creating the virtual environment
    * Navigate to the cloned repository on your machine. Ensure you are in the root of the repository.
    * Run the command ``` conda env create --file environment.yaml ``` in the terminal. Or use ``` conda-lock install --name condalock-new conda-lock.yml ``` which might be faster.
-   * Activate the virtual environment by running the following command in the terminal: ``` conda activate project_env ```
+   * Activate the virtual environment by running the following command in the terminal: ``` conda activate DSCI_522_project_env ```
 
 
 # Dependencies
