@@ -3,7 +3,7 @@
 
 # Contributers/Authors
 * Yuexiang Ni
-* 
+* Michael Oyatsi
 * 
 * 
 
@@ -35,6 +35,9 @@ To replicate our analysis on your machine:
   - pip==24.0
   - altair=5.3.0
   - ucimlrepo
+  - vegafusion-python-embed=1.6.9
+  - vegafusion=1.6.9 
+  - vl-convert-python=1.7.0
 
 # License Information
 This project is licensed under the terms of the MIT Licence, offered under the [MIT open source license](https://opensource.org/license/MIT). See the [LICENSE.md](insert license link when merged to main) file for more information.
