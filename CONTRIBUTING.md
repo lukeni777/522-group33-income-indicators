@@ -21,7 +21,7 @@ If your contribution is approved, you can proceed with the pull request process.
 
 ## Code of conduct
 
-By contributing to this project, you are agreeing to abide by our Code of Conduct, which can be found here [Code of Conduct](insert link to CODE_OF_CONDUCT.md).
+By contributing to this project, you are agreeing to abide by our Code of Conduct, which can be found here [Code of Conduct](https://github.com/lukeni777/522-group33-income-indicators/blob/main/CODE_OF_CONDUCT.md).
 
 ## Attribution 
 
