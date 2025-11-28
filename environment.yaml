@@ -16,6 +16,7 @@ dependencies:
   - vegafusion-python-embed=1.6.9 #Must be same version as vegafusion below to prevent crashing
   - vegafusion=1.6.9 # Must be same version as vegafusion above to prevent crashing
   - vl-convert-python>=1.7.0 # version to let the solver find a compatible version for osx-64 
+  - conda-lock=3.0.4
   - pip:
       - ucimlrepo=0.0.7
       - altair_ally>=0.1.1 # New default plotting behavior
