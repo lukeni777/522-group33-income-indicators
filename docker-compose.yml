@@ -1,0 +1,14 @@
+services:
+  dockerlock:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: 522-group33-income-indicators
+    container_name: 522-group33-income-indicators
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
