@@ -18,5 +18,5 @@ dependencies:
   - vl-convert-python>=1.7.0 # version to let the solver find a compatible version for osx-64 
   - conda-lock=3.0.4
   - pip:
-      - ucimlrepo=0.0.7
+      - ucimlrepo #Remove version pinning to ensure conda-lock operation can run
       - altair_ally>=0.1.1 # New default plotting behavior
