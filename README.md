@@ -16,10 +16,48 @@ To replicate our analysis on your machine:
    * Click the green ``` Code <> ``` button and copy the URL.
    * On your local machine's terminal, navigate to the location where you would like this repository to reside in.
    * Run the command ``` git clone <URL> ``` in the terminal.
-2. Creating the virtual environment
-   * Navigate to the cloned repository on your machine. Ensure you are in the root of the repository.
-   * Run the command ``` conda env create --file environment.yaml ``` in the terminal. Or use ``` conda-lock install --name DSCI_522_project_env conda-lock.yml ``` which might be faster if you have conda-lock installed on your machine.
-   * Activate the virtual environment by running the following command in the terminal: ``` conda activate DSCI_522_project_env ```
+
+## Running the project with Docker
+
+This project can be run in a reproducible environment using Docker.  
+All commands below should be run from the project root directory
+(the folder that contains `analysis/`, `data/`, `Dockerfile`, etc.).
+
+### 1. Prerequisites
+
+- Docker installed and running on your machine
+- Internet connection (if pulling the image from Docker Hub)
+
+---
+
+### 2. Pull the pre-built image from Docker Hub
+
+A pre-built image is available at:
+
+`lukeni777/income-indicators:b8294f1`
+
+From the project root, open a terminal and run the following commands:
+
+```bash
+# Pull the image from Docker Hub (this may take a few minutes)
+docker pull lukeni777/income-indicators:b8294f1
+
+# Run the container and start JupyterLab
+docker run --rm -p 8888:8888 \
+  -v "$PWD":/workplace \
+  -w /workplace \
+  lukeni777/income-indicators:b8294f1
+```
+This will start a JupyterLab server inside the container and print a URL on the terminal like:
+
+http://127.0.0.1:8888/lab
+
+Copy this URL into your browser to open JupyterLab.
+
+In the left file browser, you should see the project files under /workplace
+(e.g., the analysis/ and data/ folders).
+Open the notebook(s) in analysis/ to run the report.
+
 
 
 # Dependencies
