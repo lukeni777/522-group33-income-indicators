@@ -1,6 +1,5 @@
 name: dsci_522_project_env
 platforms: #Include all possible user platforms a user may have
-  - linux-aarch64
   - linux-64
   - osx-64
   - osx-arm64
