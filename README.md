@@ -16,7 +16,7 @@ To replicate our analysis on your machine:
    * Click the green ``` Code <> ``` button and copy the URL.
    * On your local machine's terminal, navigate to the location where you would like this repository to reside in.
    * Run the command ``` git clone <URL> ``` in the terminal.
-   
+
 ## Running the project with Docker
 
 This project can be run in a reproducible environment using Docker.  
@@ -40,13 +40,13 @@ From the project root, open a terminal and run the following commands:
 
 ```bash
 # Pull the image from Docker Hub (this may take a few minutes)
-docker pull lukeni777/income-indicators:b8294f1
+docker pull lukeni777/income-indicators:latest
 
 # Run the container and start JupyterLab
 docker run --rm -p 8888:8888 \
   -v "$PWD":/workplace \
   -w /workplace \
-  lukeni777/income-indicators:b8294f1
+  lukeni777/income-indicators:latest
 ```
 This will start a JupyterLab server inside the container and print a URL on the terminal like:
 
