@@ -66,6 +66,11 @@ category_levels = {
     ]
 }
 
+
+numeric_cols = ['capital-gain','capital-loss']
+# Target column
+target_col = "income"
+
 class DataValidator:
     """
     A class to perform data validation checks on the Adult Census dataset, 
@@ -75,8 +80,9 @@ class DataValidator:
     def __init__(self, df: pd.DataFrame):
         self.df = df
         self.missing_threshold: float = 0.05 # 5% missingness threshold
+        self.tolerance: float = 0.05 # 5% Target distribution tolerance
 
-    def validate_all(self):
+    def validate_all(self, expected_dist):
         """Run all validation checks."""
         print("--- Starting Data Validation Checks ---")
         self.check_column_structure_and_types()
@@ -85,6 +91,7 @@ class DataValidator:
         self.check_for_duplicate_observations()
         self.check_for_outliers()
         self.check_category_levels()
+        self.check_target_distribution(expected_dist)
         print("--- All core data validation checks passed successfully! ---")
 
     ## 1 & 2. Correct column names and data types - Pandera
@@ -159,7 +166,6 @@ class DataValidator:
 
         # numeric columns to check outliers from
         # numeric_cols = self.df.select_dtypes(include=['number']).columns
-        numeric_cols = ['capital-gain','capital-loss']
         columns_with_outliers = []
 
         # Using IQR method (Interquartile range) for outliers
@@ -179,6 +185,7 @@ class DataValidator:
 
     ## 8. Correct category levels (i.e., no string mismatches or single values)
     def check_category_levels(self):
+        
         category_cols = self.df.select_dtypes(include=['object']).columns
         column_with_anomalies = []
 
@@ -197,3 +204,27 @@ class DataValidator:
             error_message = f"category columns with anomalies {column_with_anomalies}."
             raise DataValidationError(error_message)
         print("No anomalies found in categorical columns.")
+
+    ## 9. Target/response variable follows expected distribution
+    def check_target_distribution(self, expected_dist):
+        
+        if target_col not in self.df.columns:
+            raise ValueError(f"Target column '{target_col}' not found in DataFrame.")
+
+        # Actual distribution (proportion)
+        actual_dist = self.df[target_col].value_counts(normalize=True)
+
+        # Compare with expected distribution
+        anomalies = []
+        for category, expected_prop in expected_dist.items():
+            actual_prop = actual_dist.get(category, 0)
+            if abs(actual_prop - expected_prop) > self.tolerance:
+                anomalies.append(
+                    f"Category '{category}' expected {expected_prop:.2f}, got {actual_prop:.2f}"
+                )
+
+        if anomalies:
+            error_message = "Target distribution does NOT match expected distribution:" + "\n".join(anomalies)
+            raise DataValidationError(error_message)
+
+        print("Target distribution matches expected proportions.")
