@@ -5,6 +5,7 @@ import numpy as np
 import os
 import pandera.pandas as pa
 from pandera.pandas import Column, DataFrameSchema, errors
+from scipy import stats
 
 
 class DataValidationError(Exception):
@@ -50,6 +51,7 @@ class DataValidator:
         self.check_column_structure_and_types()
         self.check_for_empty_observations()
         self.check_missingness_threshold()
+        self.check_for_duplicate_observations()
         print("--- All core data validation checks passed successfully! ---")
 
     ## 1 & 2. Correct column names and data types - Pandera
@@ -58,7 +60,7 @@ class DataValidator:
         try:
             # Validation based on the global schema
             COLUMN_AND_TYPE_SCHEMA.validate(self.df, lazy=True)
-            print("✅ Column names and critical data types are correct.")
+            print("Column names and critical data types are correct.")
 
         except errors.SchemaErrors as e:
             error_message = "Structural and Data Type validation failed (Pandera):\n"
@@ -77,7 +79,7 @@ class DataValidator:
         if empty_rows_count > 0:
             error_message = f"{empty_rows_count} rows found with entirely empty observations."
             raise DataValidationError(error_message)
-        print("✅ No entirely empty observations found (i.e., no completely missing rows).")
+        print("No entirely empty observations found (i.e., no completely missing rows).")
 
 
     ## 4. Missingness not beyond expected threshold (column check - 5%)
@@ -93,7 +95,7 @@ class DataValidator:
             error_message = (
                 f"Missingness exceeds the {self.missing_threshold:.0%} threshold in the following columns:\n{error_details}")
             raise DataValidationError(error_message)
-        print(f"✅ Missingness in all columns is within the {self.missing_threshold:.0%} threshold.")
+        print(f"Missingness in all columns is within the {self.missing_threshold:.0%} threshold.")
 
     ## 5. Correct data file format and existence
     @staticmethod
@@ -105,6 +107,17 @@ class DataValidator:
         # check readability and format assumption
         try:
             pd.read_csv(file_path, nrows=5)
-            print("✅ Data file format (CSV) is confirmed and the file exists.")
+            print("Data file format (CSV) is confirmed and the file exists.")
         except Exception as e:
             raise DataValidationError(f"File format check failed. Error reading CSV: {e}")
+        
+    ## 6. No duplicate observations
+    def check_for_duplicate_observations(self):
+        
+        duplicate_rows_count = self.df.duplicated().sum()
+
+        if duplicate_rows_count > 0:
+            error_message = f"{duplicate_rows_count} rows found with duplicate observations."
+            raise DataValidationError(error_message)
+        print("No duplicate observations found.")
+
