@@ -81,7 +81,7 @@ class DataValidator:
         self.df = df
         self.missing_threshold: float = 0.05 # 5% missingness threshold
         self.tolerance: float = 0.05 # 5% Target distribution tolerance
-        self.threshold: float = 0.9 # 90% correlation threshold
+        self.threshold: float = 0.8 # 80% correlation threshold
 
     def validate_all(self, expected_dist):
         """Run all validation checks."""
@@ -168,11 +168,13 @@ class DataValidator:
     def check_for_outliers(self):
 
         # numeric columns to check outliers from
-        # numeric_cols = self.df.select_dtypes(include=['number']).columns
+        #numeric_cols = self.df.select_dtypes(include=['number']).columns
         columns_with_outliers = []
 
         # Using IQR method (Interquartile range) for outliers
         for col in numeric_cols:
+            if self.df[col].nunique() <= 2:
+                continue   # skip zero-inflated / categorical numeric columns
             q1 = self.df[col].quantile(0.25)
             q3 = self.df[col].quantile(0.75)
             iqr = q3 - q1
@@ -269,8 +271,15 @@ class DataValidator:
 
     ## 11. No anomalous correlations between features/explanatory variables 
     def check_feature_correlations(self):
+        # Select numeric columns
+        numeric_cols = self.df.select_dtypes(include=['number']).columns.tolist()
         
-         # Select numeric columns
+        # Avoid correlating the encoded target with the numeric features twice and creating false anomalies.
+        encoded_col = target_col + '_encoded'
+        if encoded_col in numeric_cols:
+            numeric_cols.remove(encoded_col)
+
+        # Select numeric columns
         numeric_cols = self.df.select_dtypes(include=['number']).columns.tolist()
         
         if len(numeric_cols) < 2:
