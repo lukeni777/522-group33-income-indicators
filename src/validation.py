@@ -35,6 +35,37 @@ COLUMN_AND_TYPE_SCHEMA = DataFrameSchema(
     strict=True # col name check
 )
 
+# Expected Category levels
+category_levels = {
+    "workclass":[
+        "Private", "Self-emp-not-inc", "Self-emp-inc", "Federal-gov", "Local-gov", "State-gov", "Without-pay", "Never-worked"
+    ],
+    "education":[
+        "Bachelors", "Some-college", "11th", "HS-grad", "Prof-school", "Assoc-acdm", "Assoc-voc", "9th", "7th-8th", "12th", "Masters", "1st-4th", "10th", "Doctorate", "5th-6th", "Preschool"
+    ],
+    "marital-status":[
+        "Married-civ-spouse", "Divorced", "Never-married", "Separated", "Widowed", "Married-spouse-absent", "Married-AF-spouse"
+    ],
+    "occupation":[
+        "Tech-support", "Craft-repair", "Other-service", "Sales", "Exec-managerial", "Prof-specialty", "Handlers-cleaners", "Machine-op-inspct", "Adm-clerical", "Farming-fishing", "Transport-moving", "Priv-house-serv", "Protective-serv", "Armed-Forces"
+    ],
+    "relationship":[
+        "Wife", "Own-child", "Husband", "Not-in-family", "Other-relative", "Unmarried"
+    ],
+    "race":[
+        "White", "Asian-Pac-Islander", "Amer-Indian-Eskimo", "Other", "Black"
+    ],
+    "sex":[
+        "Female", "Male"
+    ],
+    "native-country":[
+        "United-States", "Cambodia", "England", "Puerto-Rico", "Canada", "Germany", "Outlying-US(Guam-USVI-etc)", "India", "Japan", "Greece", "South", "China", "Cuba", "Iran", "Honduras", "Philippines", "Italy", "Poland", "Jamaica", "Vietnam", "Mexico", "Portugal", "Ireland", "France", "Dominican-Republic", "Laos", "Ecuador", "Taiwan", "Haiti", "Columbia", "Hungary", "Guatemala", "Nicaragua", "Scotland", "Thailand", "Yugoslavia", "El-Salvador", "Trinadad&Tobago", "Peru", "Hong", "Holand-Netherlands"
+    ],
+    "income":[
+        ">50K", "<=50K"
+    ]
+}
+
 class DataValidator:
     """
     A class to perform data validation checks on the Adult Census dataset, 
@@ -53,6 +84,7 @@ class DataValidator:
         self.check_missingness_threshold()
         self.check_for_duplicate_observations()
         self.check_for_outliers()
+        self.check_category_levels()
         print("--- All core data validation checks passed successfully! ---")
 
     ## 1 & 2. Correct column names and data types - Pandera
@@ -144,3 +176,24 @@ class DataValidator:
             error_message = f"{columns_with_outliers} column values have outliers."
             raise DataValidationError(error_message)
         print("No outliers found in numeric columns.")
+
+    ## 8. Correct category levels (i.e., no string mismatches or single values)
+    def check_category_levels(self):
+        category_cols = self.df.select_dtypes(include=['object']).columns
+        column_with_anomalies = []
+
+        for col,allowed_levels in category_levels.items():
+            if col in self.df.columns:
+                # Strip leading/trailing spaces
+                self.df[col] = self.df[col].astype(str).str.strip()   
+                # Count values not in allowed levels
+                mask = ~self.df[col].isin(allowed_levels)
+                count_anomalies = mask.sum()
+                
+                if count_anomalies > 0:
+                    column_with_anomalies.append({"column": col, "anomalous_count": count_anomalies}) 
+
+        if column_with_anomalies:
+            error_message = f"category columns with anomalies {column_with_anomalies}."
+            raise DataValidationError(error_message)
+        print("No anomalies found in categorical columns.")
