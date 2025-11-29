@@ -52,6 +52,7 @@ class DataValidator:
         self.check_for_empty_observations()
         self.check_missingness_threshold()
         self.check_for_duplicate_observations()
+        self.check_for_outliers()
         print("--- All core data validation checks passed successfully! ---")
 
     ## 1 & 2. Correct column names and data types - Pandera
@@ -121,3 +122,25 @@ class DataValidator:
             raise DataValidationError(error_message)
         print("No duplicate observations found.")
 
+    ## 7. No outlier or anomalous values
+    def check_for_outliers(self):
+
+        # numeric columns to check outliers from
+        # numeric_cols = self.df.select_dtypes(include=['number']).columns
+        numeric_cols = ['capital-gain','capital-loss']
+        columns_with_outliers = []
+
+        # Using IQR method (Interquartile range) for outliers
+        for col in numeric_cols:
+            q1 = self.df[col].quantile(0.25)
+            q3 = self.df[col].quantile(0.75)
+            iqr = q3 - q1
+            outliers = self.df[(self.df[col] < q1 - 1.5*iqr) | (self.df[col] > q3 + 1.5*iqr)] 
+            if not outliers.empty:
+                columns_with_outliers.append(col)
+                print(outliers[[col]])
+
+        if columns_with_outliers:
+            error_message = f"{columns_with_outliers} column values have outliers."
+            raise DataValidationError(error_message)
+        print("No outliers found in numeric columns.")
