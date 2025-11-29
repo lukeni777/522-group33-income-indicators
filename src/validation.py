@@ -81,6 +81,7 @@ class DataValidator:
         self.df = df
         self.missing_threshold: float = 0.05 # 5% missingness threshold
         self.tolerance: float = 0.05 # 5% Target distribution tolerance
+        self.threshold: float = 0.9 # 90% correlation threshold
 
     def validate_all(self, expected_dist):
         """Run all validation checks."""
@@ -92,6 +93,7 @@ class DataValidator:
         self.check_for_outliers()
         self.check_category_levels()
         self.check_target_distribution(expected_dist)
+        self.check_target_feature_correlation()
         print("--- All core data validation checks passed successfully! ---")
 
     ## 1 & 2. Correct column names and data types - Pandera
@@ -228,3 +230,38 @@ class DataValidator:
             raise DataValidationError(error_message)
 
         print("Target distribution matches expected proportions.")
+
+    ## 10. No anomalous correlations between target/response variable and features/explanatory variables
+    def check_target_feature_correlation(self):
+        
+        if target_col not in self.df.columns:
+            raise ValueError(f"Target column '{target_col}' not found in DataFrame.")
+
+        # Select numeric columns
+        numeric_cols = self.df.select_dtypes(include=['number']).columns.tolist()
+
+        # Create temporary encoded column
+        encoded_col = target_col + '_encoded'
+        
+        # Encode categorical target as numeric
+        self.df[encoded_col] = self.df[target_col].map({'<=50K': 0, '>50K': 1})
+        anomalies = []
+
+        for col in numeric_cols:
+            x = self.df[encoded_col]
+            y = self.df[col]
+            
+            if x.nunique() <= 1 or y.nunique() <= 1:
+                corr = 0  # skip constant columns
+            else:
+                corr = x.corr(y, method="pearson")
+            if abs(corr) >= self.threshold:
+                anomalies.append({"feature": col, "correlation": corr})
+
+        if anomalies:
+            error_message = "Anomalous correlations detected with target variable:\n"
+            for item in anomalies:
+                error_message += f"  - {item['feature']}: correlation = {item['correlation']:.2f}\n"
+            raise DataValidationError(error_message)
+
+        print("No anomalous correlations found between target and numeric features.")
