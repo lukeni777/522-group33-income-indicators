@@ -94,6 +94,7 @@ class DataValidator:
         self.check_category_levels()
         self.check_target_distribution(expected_dist)
         self.check_target_feature_correlation()
+        self.check_feature_correlations()
         print("--- All core data validation checks passed successfully! ---")
 
     ## 1 & 2. Correct column names and data types - Pandera
@@ -265,3 +266,40 @@ class DataValidator:
             raise DataValidationError(error_message)
 
         print("No anomalous correlations found between target and numeric features.")
+
+    ## 11. No anomalous correlations between features/explanatory variables 
+    def check_feature_correlations(self):
+        
+         # Select numeric columns
+        numeric_cols = self.df.select_dtypes(include=['number']).columns.tolist()
+        
+        if len(numeric_cols) < 2:
+            print("Not enough numeric features to check correlations.")
+            return
+
+        # Compute correlation matrix
+        corr_matrix = self.df[numeric_cols].corr(method="pearson").abs()
+
+        anomalies = []
+
+        # Iterate over upper triangle of correlation matrix to avoid duplicate pairs
+        for i in range(len(numeric_cols)):
+            for j in range(i + 1, len(numeric_cols)):
+                col1 = numeric_cols[i]
+                col2 = numeric_cols[j]
+                corr_value = corr_matrix.loc[col1, col2]
+
+                if np.isnan(corr_value):
+                    # Skip NaN correlations (happens if a column has zero variance)
+                    continue
+
+                if corr_value >= self.threshold:
+                    anomalies.append({"feature_1": col1, "feature_2": col2, "correlation": corr_value})
+
+        if anomalies:
+            error_message = "Anomalous correlations detected between features:\n"
+            for item in anomalies:
+                error_message += f"  - {item['feature_1']} & {item['feature_2']}: correlation = {item['correlation']:.2f}\n"
+            raise DataValidationError(error_message)
+
+        print("No anomalous correlations found between numeric features.")
