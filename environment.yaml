@@ -19,7 +19,7 @@ dependencies:
   - vegafusion=1.6.9 # Must be same version as vegafusion above to prevent crashing
   - vl-convert-python=1.8.0 # version to let the solver find a compatible version for osx-64 
   - conda-lock=3.0.4
-  - r-quarto=1.5.1
+  - quarto=1.8.26
   - pip:
       - ucimlrepo==0.0.7 #Remove version pinning to ensure conda-lock operation can run
       - altair_ally==0.1.1 # New default plotting behavior
