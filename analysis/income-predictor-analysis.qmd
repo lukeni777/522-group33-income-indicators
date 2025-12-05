@@ -6,10 +6,9 @@ jupyter: python3
 format:
     html:
         toc: true
-        toc-depth: 2
     pdf:
         toc: true
-        toc-depth: 2
+bibliography: references.bib
 execute:
     echo: false
     warning: false
@@ -53,22 +52,29 @@ While the Logistic Regression classifier was chose to easier identify the socioe
 
 ## Introduction
 
-How is an individual's income affected by other socioeconomic factors? This is the question our team set out to investigate. Socioeconomic status here is defined as a way of describing people based on their education, income and type of job (National Cancer Institute, n.d.). With the diversity of backgrounds that can exist in society, we set out to understand what factors contribute most to an individuals income. 
+How is an individual's income affected by other socioeconomic factors? This is the question our team set out to investigate. Socioeconomic status here is defined as a way of describing people based on their education, income and type of job (@socioeconomic_status). With the diversity of backgrounds that can exist in society, we set out to understand what factors contribute most to an individuals income. 
 
-In this analysis, we use machine learning to predict whether an individuals income is above or below $50,000. As the government sets out massive investment in Canadian societies to improve the lives of citizens(Housing, Infrastructure and Communities Canada, 2025), we envision our analysis as a means of providing insights to the government as to what investments can drive the best chances of improving an individuals life. The persistent income and wealth inequeality increase presents a strong case for prudent investing to improve lives across all Canadians. (Yassin, Petit, & Abraham, 2024)
+In this analysis, we use machine learning to predict whether an individuals income is above or below $50,000. As the government sets out massive investment in Canadian societies to improve the lives of citizens(@housing_canada), we envision our analysis as a means of providing insights to the government as to what investments can drive the best chances of improving an individuals life. The persistent income and wealth inequeality increase presents a strong case for prudent investing to improve lives across all Canadians. (@income_inequality)
 
 ## Methods
 
- #### Data
+#### Data
 
-For our dataset, we use the Adult dataset sourced from the UC Irvine Machine Learning Repository (Becker & Kohavi, 1996). The dataset contains 14 features obtained from census data to describe an individuals attributes. The target is a categorical column comprised of a binary outcome of whether an individual earns more than USD 50,000(>50K) or USD 50,000 or less (<=50K). 
+For our dataset, we use the Adult dataset sourced from the UC Irvine Machine Learning Repository (@UCI_repo). The dataset contains 14 features obtained from census data to describe an individuals attributes. The target is a categorical column comprised of a binary outcome of whether an individual earns more than USD 50,000(>50K) or USD 50,000 or less (<=50K). 
 The data and the descriptions fo the corresponding attributes can be explored using this [link](https://archive.ics.uci.edu/dataset/2/adult)
 
 ## Exploratory Data Analysis
 
 Prior to model fitting and feature selection, we first perform EDA to understand the distribution of our features as it relates to our target. 
 
-The code chunk below imports our dataset. 
+Below, @tbl-head shows a snip of our dataset, highlighting all the columns, as well as a small portion of the data. 
+
+```{python}
+#| label: tbl-head
+#| tbl-cap: Snippet of the census data
+
+print("This code needs to return a csv document of the adult_df.head(5) output like below.")
+```
 
 ```{python}
 #| vscode: {languageId: r}
@@ -119,7 +125,7 @@ adult_df = adult_df.dropna()
 adult_df.head(5)
 ```
 
-#### Data Validation Check
+#### Data Validation Check (Will be deleted)
 
 To ensure the trustworthiness and reproducibility of our analysis, we perform a strict data validation check on the loaded raw data. This validation uses the custom DataValidator class from our **src/validation.py** module to verify critical aspects of the dataset:
 - **File integrity** – confirming the file exists and is in the correct format.
@@ -263,13 +269,15 @@ adult_test.to_csv('../data/processed/adult_census_test_data.csv')
 
 #### Univariate Distribution of The Quantitative Variables 
 
-*Note - Visualization of the distributions below using the `altair-ally` package is performed with code adapted from UBC's DSCI-573: Feature and Model Selection Course. Reference on the Altair Ally package can be found in using [this external link](https://vega.github.io/altair_ally/intro.html)*
+*Note - Visualization of the distributions below using the altair-ally python package (@ostblom_altair_ally) is performed with code adapted from UBC's DSCI-573: Feature and Model Selection Course. Reference on the Altair Ally package can be found in using [this external link](https://vega.github.io/altair_ally/intro.html)*
 
-We first investigate the distribution of the dataset's quantitative variables age against their income bracket. From the plots below, we pay special focus on the age distribution of the respondents. Both distributions are right-skewed. Income earners at or below USD 50,000 skew younger than fellow respondents earning above USD 50,000. 
+We first investigate the distribution of the dataset's quantitative variables split against the respective income brackets summarized in @fig-quant. From the plots below, we pay special focus on the age distribution of the respondents. Both distributions are right-skewed. Income earners at or below USD 50,000 tend to be younger than fellow respondents earning above USD 50,000. 
 
 Of note also is the age distribution of hours worked per week, with most respondents in both income brackets reporting about 40 hours per week. The `fnlweight` feature is a final numerical value representing the final weight of the record. This value can be viewed as the number of people represented by the row. Without further breakdown on the methods or derivation of this value, we chose to ignore it in our analysis. 
 
-Similarly, no in depth data is provided on the `capital-loss` and `capital-gain` features, but these fields may have strong predictive value for identifying higher-income earners, so we consider creating a binary indicator (like has_capital_gain) to capture the signals.
+Similarly, no in depth data is provided on the `capital-loss` and `capital-gain` features, but these fields may have strong predictive value for identifying higher-income earners, so we chose to maintain this information, but rather chose to perform binary encoding e.g. any capital-gain above the threshold of zero is encoded as True while all values below zero are encoded as False. This choice was motivated by the need to maintain the information value of the features while smoothing out the noise due to a lack of detailed information from the data's repository. 
+
+![Univariate Distribution of the Quantitative Variables](../results/figures/another%20cat.jpg){#fig-quant}
 
 ```{python}
 #| vscode: {languageId: r}
@@ -278,7 +286,7 @@ aly.dist(adult_train_imp, color='income')
 
 #### Univariate Distribution of the Categorical Variables
 
-We also review the distribution of select categorical variables below. 
+We also review the distribution of select categorical variables summarized in @fig-categorical
 
 From the first histogram of `income` distribution, we can see that the dataset contains more records of low income earners compared to high income earners, a ration of about 3:1. 
 
@@ -293,6 +301,8 @@ In order to prevent propagating inherent societal biases in our model, the follo
 Moreover, the `relationship` feature, which represents the relationship the observation has relative to others is not considered as the useful information is encoded within the respondent's marital status. 
 
 We also exclude the `native-country` from our visualization and feature. The overwhelming majority of the respondents are American-born and with little information on other information regarding the foreign-born respondents (e.g. how long they have been in the USA), we exclude this feature from our model. 
+
+![Univariate Distribution of the Categorical Variables](../results/figures/cat-png-17.png){#fig-categorical}
 
 ```{python}
 #| vscode: {languageId: r}
@@ -311,21 +321,23 @@ aly.dist(adult_train_imp.select_dtypes(include='object').drop(columns=['relation
 
 The adult dataset has various types of features: numeric, categorical, binary.
 | Feature | Type | Transformation |
-| :------- | :------: | -------: |
-| age	| Integer | Scaling with StandardScaler |
+| :--- | :---: | :--- |
+| age | Integer | Scaling with StandardScaler |
 | workclass | Categorical | imputation, one-hot encoding |
-| fnlwgt |	Integer	| drop |
+| fnlwgt | Integer | drop |
 | education | Categorical | drop |
-| education-num	| Integer | no transformation needed|
-| marital-status | Categorical	| one-hot encoding |
-| occupation | Categorical |	imputation, one-hot encoding |
-| relationship	| Categorical |	drop |
-| race |	Categorical |	drop |
-| sex |	Binary	| one-hot encoding with drop=if_binary |
-| capital-gain	| Integer	| FunctionTransfor - binary flag |
-| capital-loss	| Integer	| FunctionTransfor - binary flag |
-| hours-per-week |	Integer	 | Scaling with StandardScaler |
-| native-country | Categorical	| imputation, one-hot encoding |
+| education-num | Integer | no transformation needed |
+| marital-status | Categorical | one-hot encoding |
+| occupation | Categorical | imputation, one-hot encoding |
+| relationship | Categorical | drop |
+| race | Categorical | drop |
+| sex | Binary | one-hot encoding with drop=if_binary |
+| capital-gain | Integer | FunctionTransformer - binary flag |
+| capital-loss | Integer | FunctionTransformer - binary flag |
+| hours-per-week | Integer | Scaling with StandardScaler |
+| native-country | Categorical | imputation, one-hot encoding |
+
+: Data features, their corresponding types and the transformations performed
 
 ```{python}
 #| vscode: {languageId: r}
@@ -392,7 +404,7 @@ model.fit(X_train, y_train)
 ### Model Evaluation
 
 #### Accuracy, Precision, Recall, F1-Score
-Our Logistic Regression model demonstrates robust generalization with a test accuracy of **78.08%**, mirroring the cross-validation mean of **78.2%** and indicating no overfitting. By employing balanced class weights to address dataset imbalance, the model strategically prioritizes Recall (83.6%) over Precision (47.0%) for the high-income class (>50K). This configuration results in an F1-score of 0.60, confirming that while the model successfully identifies the vast majority of high earners, it accepts a higher rate of false positives to ensure potential high-income individuals are rarely missed.
+Our Logistic Regression model demonstrates robust generalization with a test accuracy of `{python} print("This is a placeholder for our  test accuracy score. I need a table in the results repository that I can index to read the test score and post here." )`, mirroring the cross-validation mean of `{python} print("This is a placeholder for our CV accuracy score. I need a table in the results repository that I can index to read the cv train score and post here." )`and indicating no overfitting. By employing balanced class weights to address dataset imbalance, the model strategically prioritizes Recall of `{python} print("This is a placeholder for our Recall score accuracy I need a table in the results repository that I can index to read the recall score and post here." )` over Precision of `{python} print("This is a placeholder for our Precision score. I need a table in the results repository that I can index to read the precision score and post here." )` for the high-income class (>50K). This configuration results in an F1-score of `{python} print("This is a placeholder for our f1-score. I need a table in the results repository that I can index to read the f1-score and post here." )`, confirming that while the model successfully identifies the vast majority of high earners, it accepts a higher rate of false positives to ensure potential high-income individuals are rarely missed.
 
 ```{python}
 #| vscode: {languageId: r}
@@ -419,7 +431,9 @@ cross_val_results['model']
 ```
 
 #### Confusion matrix & Classification report
-The matrix confirms our high-recall strategy: the model successfully identifies the vast majority of high-income earners (minimizing False Negatives), though this aggressiveness results in more lower-income individuals being incorrectly flagged (higher False Positives).
+The confusion matrix @fig-confusion as well confirms our high-recall strategy: the model successfully identifies the vast majority of high-income earners (minimizing False Negatives), though this aggressiveness results in more lower-income individuals being incorrectly flagged (higher False Positives).
+
+![Normalized Confusion Matrix Showing Model Performance on Unseen Test Data](../results/figures/pngtree-isolated-cat-on-white-background-png-image_7094927.png){#fig-confusion}
 
 ```{python}
 #| vscode: {languageId: r}
@@ -445,6 +459,13 @@ pd.DataFrame(classification_report(
 )).transpose()
 ```
 
+We summarize the model performance against some key metrics in @tbl-classification_report below. 
+
+```{python}
+#| label: tbl-classification_report
+#| tbl-cap: Model performance summary
+print("This is a placeholder. I need a .csv of the classification report to read into the file")
+```
 ### Model Explainability (using SHAP)
 SHAP values interpret the model's decisions by assigning an 'importance score' to every feature for every prediction. This allows us to see exactly which factors pushed a specific individual's prediction towards the high-income or low-income category.
 
@@ -489,17 +510,20 @@ shap.summary_plot(
 ### Results:
 
 #### 1. Model Performance:
-- **Accuracy:** The model achieved an accuracy of 78% on the test set.
+- **Accuracy:** The model achieved an accuracy of `{python} print("This is a placeholder for our  test accuracy score. I need a table in the results repository that I can index to read the test score and post here." )` on the test set.
 - **Class Imbalance Handling:** By using class_weight='balanced', we prioritized identifying high-income earners (>50K). This likely resulted in higher Recall for the >50K class (catching more high earners) potentially at the cost of some Precision (more false positives).
 - **Confusion Matrix Analysis:** As seen in the matrix, the model correctly identified high-income individuals, while missing some False positives.
 
 #### 2. Feature Importance (Explainability)
-Using SHAP analysis, we identified the key drivers of income:
+Using SHAP analysis,summarized in @fig-shap, we identified the key drivers of income:
 
 - **Marital Status:** Being Married-civ-spouse is often the strongest positive predictor of high income (indicated by the long red bar pushing to the right in the SHAP plots).
 - **Age:** The dependence plot shows a positive correlation between age and income up to a certain point (likely 50-60 years old), after which it may plateau or decrease.
 - **Education:** Higher education-num consistently pushes predictions toward the >50K category.
 - **Hours per week:** Individuals investing more hours per week are overwhelmingly classified as high income.
+
+![Summary of High Impact features using SHAP](../results/figures/438-4384799_youre-almost-there-graphic-design.jpg){#fig-shap}
+
 
 ### Conclusion
 
@@ -508,15 +532,5 @@ This analysis successfully established a robust predictive model for income clas
 From a socioeconomic perspective, our results align closely with established economic theory. **Education** emerged as a dominant differentiator, validating the concept of human capital where higher investment in skills directly correlates with earning potential. Similarly, **Marital Status** proved to be a substantial predictor, likely reflecting the economic stability often associated with dual-income households or the "marriage premium" phenomenon observed in labor economics. **Age** also displayed a strong positive trend, illustrating the natural accumulation of experience and seniority over a career trajectory, though this effect naturally plateaus as individuals near retirement.
 
 ### References
-
-National Cancer Institute. (n.d.). Socioeconomic status. In NCI Dictionary of Cancer Terms. Retrieved November 20, 2025, from https://www.cancer.gov/publications/dictionaries/cancer-terms/def/socioeconomic-status
-
-Housing, Infrastructure and Communities Canada. (2025, September 12). Investing in Canada Plan – Building a Better Canada. Retrieved November 20, 2025, from https://housing-infrastructure.canada.ca/plan/about-invest-apropos-eng.html
-
-Becker, B., & Kohavi, R. (1996). Adult [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5XW20
-
-Yassin, S., Petit, G., & Abraham, Y. (2024, July 18). The troubling rise of income and wealth inequality in Canada. Policy Options. Institute for Research on Public Policy. https://policyoptions.irpp.org/2024/07/income-wealth-inequality/
-
-Chen, J. (n.d.). Feature Significance Analysis of the US Adult Income Dataset (TR 1869) [Technical report, University of Wisconsin–Madison]. UW–Madison Institutional Repository. https://minds.wisconsin.edu/bitstream/handle/1793/82299/TR1869%20Junda%20Chen%203.pdf?sequence=1&isAllowed=y
 
 
