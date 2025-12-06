@@ -1,0 +1,11 @@
+,mean,std
+fit_time,0.253,0.042
+score_time,0.106,0.016
+test_accuracy,0.782,0.007
+train_accuracy,0.783,0.003
+test_precision,0.47,0.01
+train_precision,0.473,0.004
+test_recall,0.836,0.016
+train_recall,0.839,0.002
+test_f1,0.602,0.012
+train_f1,0.605,0.004
