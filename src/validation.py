@@ -3,8 +3,10 @@ import pandas as pd
 from typing import List, Dict, Tuple
 import numpy as np
 import os
+import click
 import pandera.pandas as pa
 from pandera.pandas import Column, DataFrameSchema, errors
+from sklearn.model_selection import train_test_split
 from scipy import stats
 
 
@@ -312,3 +314,66 @@ class DataValidator:
             raise DataValidationError(error_message)
 
         print("No anomalous correlations found between numeric features.")
+
+
+@click.command()
+@click.option('--in_file', default="data/raw/adult_census_data.csv", help="Input raw file")
+def main(in_file):
+    # Read & Transform Data for Validation
+    print("Loading data for validation...")
+    adult_df = pd.read_csv(in_file)
+
+    print("Basic Data Transformation in progress...")
+    adult_df.income = adult_df.income.replace(to_replace=['<=50K.', '>50K.'], value=['<=50K','>50K'])
+    adult_df = adult_df.drop_duplicates()
+
+    # Remove outliers in capital-gain and capital-loss
+    numeric_cols = ['capital-gain','capital-loss']
+    for col in numeric_cols:
+        if adult_df[col].nunique() <= 2:
+                    continue   # skip zero-inflated / categorical numeric columns
+        q1 = adult_df[col].quantile(0.25)
+        q3 = adult_df[col].quantile(0.75)
+        iqr = q3 - q1
+        lower = q1 - 1.5 * iqr
+        upper = q3 + 1.5 * iqr
+            
+        adult_df = adult_df[(adult_df[col] >= lower) & (adult_df[col] <= upper)]
+
+    # Remove anomalies in categorical columns (presence of '?')
+    adult_df = adult_df.replace('?', np.nan)
+
+    # Drop null values from the data
+    adult_df = adult_df.dropna()
+    expected_income_dist = {"<=50K": 0.80, ">50K": 0.20}
+
+    # --- Validation ---
+    print("Validation started...")
+    try:
+        # 1. Check file existence/format
+        DataValidator.check_file_format_and_existence(in_file)
+        
+        # 2. Run other stucture & data quality checks
+        validator = DataValidator(adult_df)
+        validator.validate_all(expected_income_dist)
+        print("\n\nSUCCESS: Data passed all validation checks and is ready for analysis!")
+
+    except DataValidationError as e:
+        print(f"\n=========================================================================")
+        print(f"VALIDATION FAILED! Analysis Halted to Prevent Data Leakage/Errors.")
+        print(f"Error Details: {e}")
+        print(f"=========================================================================")
+        adult_df = None
+        
+    except Exception as e:
+        # Catch any other unexpected loading errors
+        print(f"An unexpected error occurred during data loading: {e}")
+        adult_df = None
+
+    if adult_df is not None:
+        print(f"\nProceeding with a validated DataFrame of shape: {adult_df.shape}")
+
+
+import os
+if __name__ == "__main__":
+    main()
