@@ -1,6 +1,6 @@
-,age,workclass,fnlwgt,education,education-num,marital-status,occupation,relationship,race,sex,capital-gain,capital-loss,hours-per-week,native-country,income
-1,50,Self-emp-not-inc,83311,Bachelors,13,Married-civ-spouse,Exec-managerial,Husband,White,Male,0,0,13,United-States,<=50K
-2,38,Private,215646,HS-grad,9,Divorced,Handlers-cleaners,Not-in-family,White,Male,0,0,40,United-States,<=50K
-3,53,Private,234721,11th,7,Married-civ-spouse,Handlers-cleaners,Husband,Black,Male,0,0,40,United-States,<=50K
-4,28,Private,338409,Bachelors,13,Married-civ-spouse,Prof-specialty,Wife,Black,Female,0,0,40,Cuba,<=50K
-5,37,Private,284582,Masters,14,Married-civ-spouse,Exec-managerial,Wife,White,Female,0,0,40,United-States,<=50K
+age,workclass,fnlwgt,education,education-num,marital-status,occupation,relationship,race,sex,capital-gain,capital-loss,hours-per-week,native-country,income_encoded
+40,Private,225193,HS-grad,9,Married,Handlers-cleaners,Husband,White,Male,0,0,63,United-States,0
+21,Private,133375,HS-grad,9,Divorced,Sales,Unmarried,White,Female,0,0,48,United-States,0
+51,Self-emp-not-inc,136836,Assoc-acdm,12,Divorced,Transport-moving,Unmarried,Black,Female,0,0,30,United-States,0
+31,Private,329874,Some-college,10,Never-married,Adm-clerical,Not-in-family,White,Male,0,0,40,United-States,0
+44,Private,265266,10th,6,Married,Transport-moving,Husband,White,Male,0,0,40,United-States,0
