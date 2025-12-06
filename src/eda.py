@@ -41,7 +41,17 @@ def main(in_file, out_dir):
     chart1 =  aly.dist(adult_train_imp, color='income').properties(title="Distribution of Quantitative Features")
     chart1.save(os.path.join(fig_dir, "quantitative_distribution.png"))
     chart1.show()
-
+    
+    # Plot 2 - Univariate Distribution of Categorical Features
+    print("Saving Distribution of Categorical Features plot......")
+    chart2 =  aly.dist(
+          adult_train_imp.select_dtypes(include='object').drop(
+                columns=['relationship', 'sex','education-num', 'race', 
+                         'native-country']), 
+         dtype='object', color='income'
+         ).properties(title="Distribution of Categorical Features")
+    chart2.save(os.path.join(fig_dir, "categorical_distribution.png"))
+    chart1.show()
 
 
 if __name__ == "__main__":
