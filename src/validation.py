@@ -373,6 +373,16 @@ def main(in_file):
     if adult_df is not None:
         print(f"\nProceeding with a validated DataFrame of shape: {adult_df.shape}")
 
+    # Combine all married groups in marital status to one group. 
+    adult_df['marital-status'] = adult_df['marital-status'].replace(to_replace=r'^Married\b.*', value='Married', regex=True)
+
+    # Create a Test train split of the data
+    adult_train, adult_test = train_test_split(adult_df, test_size=0.3, random_state=522)
+
+    # Store Cleaned Data in processed data directory
+    adult_train.to_csv(os.path.join("data", "processed", "adult_census_training_data.csv"), index=False)
+    adult_test.to_csv(os.path.join("data", "processed", "adult_census_test_data.csv"), index=False)
+    print("Cleaned training and test data saved to 'data/processed/' directory.")
 
 import os
 if __name__ == "__main__":
