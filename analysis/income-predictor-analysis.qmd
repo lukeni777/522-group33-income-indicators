@@ -12,6 +12,7 @@ bibliography: references.bib
 execute:
     echo: false
     warning: false
+    enables: true
 ---
 
 
@@ -21,32 +22,14 @@ execute:
 #imports
 import numpy as np
 import pandas as pd
-import altair as alt
-import altair_ally as aly
-import shap
-import matplotlib.pyplot as plt
-from scipy import stats
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.pipeline import make_pipeline
-from sklearn.compose import ColumnTransformer, make_column_transformer
-from sklearn.preprocessing import FunctionTransformer
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import ConfusionMatrixDisplay
-from sklearn.model_selection import cross_val_predict
-from sklearn.metrics import classification_report
-from sklearn.metrics import make_scorer, precision_score, recall_score, f1_score, accuracy_score
-from sklearn.model_selection import cross_validate
 
-# Simplify working with large dataset in altair_ally
-aly.alt.data_transformers.enable('vegafusion')
+income_indicator_score=pd.read_csv("../results/tables/income_indicator_score.csv", index_col=0)
+income_indicator_classification_report = pd.read_csv("../results/tables/income_indicator_classification_report.csv", index_col=0).round(3)
 ```
 
 ## Executive Summary
 
-We built a classification model to predict an individual's income group, split by whether they are high earners (> USD 50,000) or low earners (<= USD 50,000). Using a Logistic Regression classifier, our model accuracy was 78% on unseen test data with an associated F1 score of 0.602. To address the class imbalance in the data, we used a balanced weight approach while buidling our model. We also sought to understand what socioeconomic characterstics play a the biggest role in determining an individuals income group. Using SHAP analysis, our findings show that of the features in our model,  Marital Status, Age & Education are the biggest drivers of a High Income output. 
+We built a classification model to predict an individual's income group, split by whether they are high earners (> USD 50,000) or low earners (<= USD 50,000). Using a Logistic Regression classifier, our model accuracy was `{python} str(round(income_indicator_classification_report.loc['accuracy', 'precision'],2) * 100) + "%"` on unseen test data with an associated F1 score of `{python} str(round(income_indicator_classification_report.loc['macro avg', 'f1-score'], 2))`. To address the class imbalance in the data, we used a balanced weight approach while buidling our model. We also sought to understand what socioeconomic characterstics play a the biggest role in determining an individuals income group. Using SHAP analysis, our findings show that of the features in our model,  Marital Status, Age & Education are the biggest drivers of a High Income output. 
 
 While the Logistic Regression classifier was chose to easier identify the socioeconomic features that are drivers of high income, we see an opportunity to use an ensemble model such as Random Forest Classification to improve the model's prediction metrics.
 
@@ -73,57 +56,9 @@ Below, @tbl-head shows a snip of our dataset, highlighting all the columns, as w
 #| label: tbl-head
 #| tbl-cap: Snippet of the census data
 
-print("This code needs to return a csv document of the adult_df.head(5) output like below.")
+pd.read_csv("../results/tables/adult_df_head.csv")
 ```
 
-```{python}
-#| vscode: {languageId: r}
-# Import the data from the UCI Repostitory. 
-
-from ucimlrepo import fetch_ucirepo
-
-DATA_PATH = '../data/raw/adult_census_data.csv'
-  
-# fetch dataset 
-adult = fetch_ucirepo(id=2) 
-  
-# data (as a pandas dataframe) 
-adult_df = pd.concat([adult.data.features, adult.data.targets], axis=1)
-
-# Store raw data in the project directory 
-adult_df.to_csv(DATA_PATH)
-
-# Rename target values
-adult_df.income = adult_df.income.replace(to_replace=['<=50K.', '>50K.'], value=['<=50K','>50K'])
-
-# Combine all married groups in marital status to one group. 
-# adult_df['marital-status'] = adult_df['marital-status'].replace(to_replace=r'^Married\b.*', value='Married', regex=True)
-
-# Remove duplicate rows
-adult_df = adult_df.drop_duplicates()
-
-# Remove outliers in capital-gain and capital-loss
-numeric_cols = ['capital-gain','capital-loss']
-for col in numeric_cols:
-    if adult_df[col].nunique() <= 2:
-                continue   # skip zero-inflated / categorical numeric columns
-    q1 = adult_df[col].quantile(0.25)
-    q3 = adult_df[col].quantile(0.75)
-    iqr = q3 - q1
-    lower = q1 - 1.5 * iqr
-    upper = q3 + 1.5 * iqr
-        
-    adult_df = adult_df[(adult_df[col] >= lower) & (adult_df[col] <= upper)]
-
-# Remove anomalies in categorical columns (presence of '?')
-adult_df = adult_df.replace('?', np.nan)
-
-# Drop null values from the data
-adult_df = adult_df.dropna()
-
-# Display First observations of the dataset
-adult_df.head(5)
-```
 
 #### Data Validation Check (Will be deleted)
 
@@ -139,133 +74,25 @@ To ensure the trustworthiness and reproducibility of our analysis, we perform a 
 
 **If the data fails any of these checks**, the DataValidationError will be raised, and the **notebook execution will be halted**. This prevents us from proceeding with downstream steps like modeling and visualization using corrupted or unexpected data.
 
-```{python}
-#| vscode: {languageId: r}
-# --- Setup Block for Validation ---
-import sys
-from pathlib import Path
-
-# Add the project root path to the system path
-project_root = Path.cwd().parent 
-
-if str(project_root) not in sys.path:
-    sys.path.append(str(project_root))
-    print(f"Added project root ({project_root.name}) to sys.path.")
-
-from src.validation import DataValidator, DataValidationError
-
-expected_income_dist = {
-    "<=50K": 0.80,
-    ">50K": 0.20
-}
-
-# --- Validation ---
-
-try:
-    # 1. Check file existence/format
-    DataValidator.check_file_format_and_existence(DATA_PATH)
-    
-    # 2. Run other stucture & data quality checks
-    validator = DataValidator(adult_df)
-    validator.validate_all(expected_income_dist)
-    
-    print("\n\nSUCCESS: Data passed all validation checks and is ready for analysis!")
-
-except DataValidationError as e:
-    print(f"\n=========================================================================")
-    print(f"VALIDATION FAILED! Analysis Halted to Prevent Data Leakage/Errors.")
-    print(f"Error Details: {e}")
-    print(f"=========================================================================")
-    adult_df = None
-    
-except Exception as e:
-    # Catch any other unexpected loading errors
-    print(f"An unexpected error occurred during data loading: {e}")
-    adult_df = None
-
-if adult_df is not None:
-    print(f"\nProceeding with a validated DataFrame of shape: {adult_df.shape}")
-```
-
 #### Train-Test-Split: Obey the Golden Rule
 
 Before proceeding with further EDA and visualization of the data, we split and stash a test set from our data in order to evaluate our model performance on unseen data in accordance with the pricinples of the Golden rule of machine learning. 
 
-```{python}
-#| vscode: {languageId: r}
-# Combine all married groups in marital status to one group. 
-adult_df['marital-status'] = adult_df['marital-status'].replace(to_replace=r'^Married\b.*', value='Married', regex=True)
 
-# Create a Test train split of the data
-adult_train, adult_test = train_test_split(adult_df, test_size=0.3, random_state=522)
-```
-
-#### Discern Features & Strategize Missing Data
+#### Discern Features & Strategize Missing Data (To be Deleted)
 
 With the split, complete we review on the `adult_train` data to understand the statistics of the numerical features and to investigate on the presence of null values.
 
-```{python}
-#| vscode: {languageId: r}
-# Investigate quality of the data
-adult_train.info()
-```
 
-```{python}
-#| vscode: {languageId: r}
-# Summarize null values 
-adult_train.isna().sum()
-```
+
+
 
 All null values have been handled during Data Validation.
 
-```{python}
-#| vscode: {languageId: r}
-# Visualize distribution of features containing incomplete information values
-# obj_df = adult_train.select_dtypes(include='object')
-# for col in obj_df.columns:
-#     if obj_df[col].str.contains('?', regex=False).any():
-#         print (col)
-```
-
-```{python}
-#| vscode: {languageId: r}
-# Visualize distributions of categorical variables in the features with missing data. 
-# for col in obj_df.columns:
-#     if obj_df[col].str.contains('?', regex=False).any():
-#         print (obj_df[col].value_counts())
-```
-
-```{python}
-#| vscode: {languageId: r}
-# # Reinforce conversion of columns to str object. 
-# for col in adult_train.select_dtypes(include='object'):
-#     adult_train[col] = adult_train[col].astype(str)
-
-# Replace missing data with NA
-# adult_train = adult_train.apply(lambda col: col.str.strip() if col.dtype=='object' else col)
-# adult_train = adult_train.replace('?', np.nan)
-
-# Perform Simple Imputation
-simple_imp = SimpleImputer(missing_values = np.nan, strategy='most_frequent')
-adult_train_imp = pd.DataFrame(simple_imp.fit_transform(adult_train), 
-                               index=adult_train.index, 
-                               columns=adult_train.columns)
 
 
-# Recast numerical featuers to int data types after Impute
-adult_train_imp = adult_train_imp.astype({'age':'int64',
-                       'fnlwgt': 'int64',
-                       'capital-gain': 'int64',
-                       'capital-loss': 'int64',
-                       'hours-per-week': 'int64'})
 
-# Confirm all missing values have been imputed
-adult_train_imp.info()
 
-# Store Cleaned Data in processed data directory
-adult_train.to_csv('../data/processed/adult_census_training_data.csv')
-adult_test.to_csv('../data/processed/adult_census_test_data.csv')
-```
 
 #### Univariate Distribution of The Quantitative Variables 
 
@@ -277,12 +104,8 @@ Of note also is the age distribution of hours worked per week, with most respond
 
 Similarly, no in depth data is provided on the `capital-loss` and `capital-gain` features, but these fields may have strong predictive value for identifying higher-income earners, so we chose to maintain this information, but rather chose to perform binary encoding e.g. any capital-gain above the threshold of zero is encoded as True while all values below zero are encoded as False. This choice was motivated by the need to maintain the information value of the features while smoothing out the noise due to a lack of detailed information from the data's repository. 
 
-![Univariate Distribution of the Quantitative Variables](../results/figures/another%20cat.jpg){#fig-quant}
+![Univariate Distribution of the Quantitative Variables](../results/figures/quantitative_distribution.png){#fig-quant}
 
-```{python}
-#| vscode: {languageId: r}
-aly.dist(adult_train_imp, color='income')
-```
 
 #### Univariate Distribution of the Categorical Variables
 
@@ -302,18 +125,8 @@ Moreover, the `relationship` feature, which represents the relationship the obse
 
 We also exclude the `native-country` from our visualization and feature. The overwhelming majority of the respondents are American-born and with little information on other information regarding the foreign-born respondents (e.g. how long they have been in the USA), we exclude this feature from our model. 
 
-![Univariate Distribution of the Categorical Variables](../results/figures/cat-png-17.png){#fig-categorical}
+![Univariate Distribution of the Categorical Variables](../results/figures/categorical_distribution.png){#fig-categorical}
 
-```{python}
-#| vscode: {languageId: r}
-# Look at the univariate distrbutions (counts) for the categorical variables
-
-# Changing churn to an object dtype just for the data passed to the chart
-aly.dist(adult_train_imp.select_dtypes(include='object').drop(columns=['relationship', 'sex',
-                                                                       'education-num', 'race', 
-                                                                       'native-country']), 
-         dtype='object', color='income')
-```
 
 ## Features & Model Selection
 
@@ -339,173 +152,30 @@ The adult dataset has various types of features: numeric, categorical, binary.
 
 : Data features, their corresponding types and the transformations performed
 
-```{python}
-#| vscode: {languageId: r}
-
-def binary_flag(x):
-    # Binary conversion for captital features
-    return (x > 0).astype(int)
-
-# Features
-numeric_features = ["age","hours-per-week", "education-num"]
-categorical_features = ["workclass", "marital-status", "occupation", "native-country"]
-binary_features = ["sex"]
-drop_features = ["fnlwgt","education", "relationship", "race", "capital-gain", "capital-loss"]
-capital_features = ["capital-gain", "capital-loss"]
-target = "income"
-
-# Transformers
-numeric_transformer = StandardScaler()
-capital_transformer = FunctionTransformer(binary_flag, feature_names_out="one-to-one")
-binary_transformer = OneHotEncoder(drop="if_binary", dtype=int)
-categorical_transformer = make_pipeline(
-            SimpleImputer(missing_values=np.nan, strategy='constant', fill_value='Unknown'),
-            # SimpleImputer(missing_values = np.nan, strategy='most_frequent'), 
-            OneHotEncoder(handle_unknown="ignore", sparse_output=False)
-        )
-
-# Preprocessor
-preprocessor = make_column_transformer(
-    (numeric_transformer, numeric_features),
-    (categorical_transformer, categorical_features),
-    (binary_transformer, binary_features),
-    (capital_transformer, capital_features),
-    ("drop", drop_features)
-)
-preprocessor
-```
-
-```{python}
-#| vscode: {languageId: r}
-# Replacing ? with NULL values in test dataset
-#adult_test = adult_test.replace('?', np.nan)
-
-# splitting features and target
-X_train = adult_train.drop(columns=target)
-X_test = adult_test.drop(columns=target)
-y_train = adult_train[target]
-y_test = adult_test[target]
-```
-
-### Fit a model
-
-```{python}
-#| vscode: {languageId: r}
-# creating a pipeline with preprocessing + LogisticRegression
-model = make_pipeline(
-    preprocessor,
-    LogisticRegression(class_weight='balanced', max_iter=1000, random_state=522, C=10)
-)
-
-# fit model on the entire training set
-model.fit(X_train, y_train)
-```
 
 ### Model Evaluation
 
 #### Accuracy, Precision, Recall, F1-Score
-Our Logistic Regression model demonstrates robust generalization with a test accuracy of `{python} print("This is a placeholder for our  test accuracy score. I need a table in the results repository that I can index to read the test score and post here." )`, mirroring the cross-validation mean of `{python} print("This is a placeholder for our CV accuracy score. I need a table in the results repository that I can index to read the cv train score and post here." )`and indicating no overfitting. By employing balanced class weights to address dataset imbalance, the model strategically prioritizes Recall of `{python} print("This is a placeholder for our Recall score accuracy I need a table in the results repository that I can index to read the recall score and post here." )` over Precision of `{python} print("This is a placeholder for our Precision score. I need a table in the results repository that I can index to read the precision score and post here." )` for the high-income class (>50K). This configuration results in an F1-score of `{python} print("This is a placeholder for our f1-score. I need a table in the results repository that I can index to read the f1-score and post here." )`, confirming that while the model successfully identifies the vast majority of high earners, it accepts a higher rate of false positives to ensure potential high-income individuals are rarely missed.
+Our Logistic Regression model demonstrates robust generalization with a test accuracy of `{python} str(round(income_indicator_classification_report.loc['accuracy', 'precision'], 2) * 100) + '%'`, mirroring the cross-validation mean of `{python} str(round(income_indicator_score.loc['test_accuracy', 'mean'], 2)) + '%' `and indicating no overfitting. By employing balanced class weights to address dataset imbalance, the model strategically prioritizes Recall of `{python} round( income_indicator_classification_report.loc['macro avg', 'recall'], 2)` over Precision of `{python} round(income_indicator_classification_report.loc['macro avg', 'precision'], 2) ` for the high-income class (>50K). This configuration results in an F1-score of `{python} round(income_indicator_classification_report.loc['macro avg', 'precision'], 2)`, confirming that while the model successfully identifies the vast majority of high earners, it accepts a higher rate of false positives to ensure potential high-income individuals are rarely missed.
 
-```{python}
-#| vscode: {languageId: r}
-# Logistic regression
-classification_metrics = {
-    "accuracy": "accuracy", 
-    "precision": make_scorer(precision_score, pos_label=">50K"), 
-    "recall": make_scorer(recall_score, pos_label=">50K"), 
-    "f1": make_scorer(f1_score, pos_label=">50K")
-}
-
-cross_val_results = {}
-cross_val_results['model'] = pd.DataFrame(cross_validate(
-    model,
-    X_train,
-    y_train,
-    return_train_score=True,
-    scoring=classification_metrics
-)).agg(['mean', 'std']).round(3).T
-
-# Show the train and validation scores
-print("Test Score: ", model.score(X_test, y_test))
-cross_val_results['model']
-```
 
 #### Confusion matrix & Classification report
 The confusion matrix @fig-confusion as well confirms our high-recall strategy: the model successfully identifies the vast majority of high-income earners (minimizing False Negatives), though this aggressiveness results in more lower-income individuals being incorrectly flagged (higher False Positives).
 
-![Normalized Confusion Matrix Showing Model Performance on Unseen Test Data](../results/figures/pngtree-isolated-cat-on-white-background-png-image_7094927.png){#fig-confusion}
+![Normalized Confusion Matrix Showing Model Performance on Unseen Test Data](../results/figures/income_indicator_confusion_matrix.png){#fig-confusion}
 
-```{python}
-#| vscode: {languageId: r}
-# Confusion matrix for the logistic regression
-confmat_logreg = ConfusionMatrixDisplay.from_estimator(
-    model,
-    X_test,
-    y_test,
-    normalize='all'
-)
 
-# Show the matrix
-print(confmat_logreg)
-
-# Classification Report
-
-print("Classification Report: ")
-pd.DataFrame(classification_report(
-    y_test, 
-    model.predict(X_test), 
-    target_names=['<=50K', '>50K'],
-    output_dict=True
-)).transpose()
-```
 
 We summarize the model performance against some key metrics in @tbl-classification_report below. 
 
 ```{python}
 #| label: tbl-classification_report
 #| tbl-cap: Model performance summary
-print("This is a placeholder. I need a .csv of the classification report to read into the file")
+income_indicator_classification_report
 ```
+
 ### Model Explainability (using SHAP)
-SHAP values interpret the model's decisions by assigning an 'importance score' to every feature for every prediction. This allows us to see exactly which factors pushed a specific individual's prediction towards the high-income or low-income category.
 
-```{python}
-#| vscode: {languageId: r}
-# A. Extract steps from the pipeline
-log_reg_model = model.named_steps['logisticregression']
-preprocessor_step = model.named_steps['columntransformer']
-
-# B. Transform Data for SHAP
-X_train_transformed = preprocessor_step.transform(X_train)
-X_test_transformed = preprocessor_step.transform(X_test)
-
-# C. Get Feature Names
-feature_names = preprocessor_step.get_feature_names_out()
-
-# D. Create Explainer
-X_train_summary = shap.sample(X_train_transformed, 100)
-explainer = shap.LinearExplainer(log_reg_model, X_train_summary)
-
-# E. Calculate SHAP Values
-shap_values = explainer.shap_values(X_test_transformed)
-
-# F. Handle Binary Classification Output - Class 1 (>50K)
-if isinstance(shap_values, list):
-    vals_to_plot = shap_values[1]
-else:
-    vals_to_plot = shap_values
-
-# G. Plot Summary with only Top 5 Features
-plt.figure(figsize=(10, 6))
-plt.title("Top 5 High Impact Features (SHAP)")
-
-shap.summary_plot(
-    vals_to_plot, 
-    X_test_transformed, 
-    feature_names=feature_names, 
-    max_display=5 # Top 5 important features
-)
-```
 
 ### Results:
 
@@ -515,14 +185,14 @@ shap.summary_plot(
 - **Confusion Matrix Analysis:** As seen in the matrix, the model correctly identified high-income individuals, while missing some False positives.
 
 #### 2. Feature Importance (Explainability)
-Using SHAP analysis,summarized in @fig-shap, we identified the key drivers of income:
+We used SHAP values,summarized in @fig-shap, to interpret the model's decisions by assigning an 'importance score' to every feature for every prediction. This allows us to see exactly which factors pushed a specific individual's prediction towards the high-income or low-income category, ultimately helping us understand the key factors that predict an individuals income. 
 
 - **Marital Status:** Being Married-civ-spouse is often the strongest positive predictor of high income (indicated by the long red bar pushing to the right in the SHAP plots).
 - **Age:** The dependence plot shows a positive correlation between age and income up to a certain point (likely 50-60 years old), after which it may plateau or decrease.
 - **Education:** Higher education-num consistently pushes predictions toward the >50K category.
 - **Hours per week:** Individuals investing more hours per week are overwhelmingly classified as high income.
 
-![Summary of High Impact features using SHAP](../results/figures/438-4384799_youre-almost-there-graphic-design.jpg){#fig-shap}
+![Summary of High Impact features using SHAP](../results/figures/income_indicator_explainability.png){#fig-shap}
 
 
 ### Conclusion
