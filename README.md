@@ -49,8 +49,6 @@ now choose one of the following options:
 -   Basic command line tools (Terminal on macOS / Linux, Git Bash or
     similar on Windows)
 
-
-
 ### 2. Create and activate the environment
 
 Create the Conda environment from `environment.yaml`:
