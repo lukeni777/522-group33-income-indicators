@@ -1,6 +1,6 @@
 ,mean,std
-fit_time,0.768,0.153
-score_time,0.272,0.076
+fit_time,1.43,1.576
+score_time,0.328,0.081
 test_accuracy,0.782,0.007
 train_accuracy,0.783,0.003
 test_precision,0.47,0.01
