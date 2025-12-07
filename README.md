@@ -79,7 +79,7 @@ From the project root, run:
 make all
 ```
 
-After this finishes, you should find the rendered report at `report/income-predictor-report.html` or `report/income-predictor-report.pdf`.
+After this finishes, you should find the rendered report at `report/income-predictor-report.html`.
 
 To remove all generated files and start fresh, you can run:
 
@@ -150,7 +150,7 @@ Open a terminal on Jupyterlab and run:
 make all
 ```
 
-After this finishes, you should find the rendered report at `report/income-predictor-report.html` or `report/income-predictor-report.pdf`
+After this finishes, you should find the rendered report at `report/income-predictor-report.html`.
 
 To remove all generated files and start fresh, you can run:
 
@@ -273,7 +273,7 @@ how to run it individually from the command line.
 
 7. **Report rendering – `step_report`**  
    Renders the Quarto report, which pulls together all of the above artifacts
-   (figures, tables, and metrics) into a single narrative document. The document can be viewed either as a html or pdf document. 
+   (figures, tables, and metrics) into a single narrative document. 
 
    - With `make`:
 
@@ -284,7 +284,7 @@ how to run it individually from the command line.
    - Under the hood, this runs:
 
      ```bash
-     quarto render report/income-predictor-report.qmd
+     quarto render report/income-predictor-report.qmd --to html
      ```
 
 8. **Cleaning generated files – `clean`**  
