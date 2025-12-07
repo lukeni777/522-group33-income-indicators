@@ -32,7 +32,6 @@ step_explainability: src/explainability.py step_evaluation
 # 7. Report (Depends on ALL artifacts)
 step_report: report/income-predictor-report.qmd step_explainability
 	quarto render report/income-predictor-report.qmd --to html
-	quarto render report/income-predictor-report.qmd --to pdf
 
 # Clean all generated files to test reproducibility
 clean:
@@ -41,5 +40,5 @@ clean:
 	rm -f results/figures/*
 	rm -f results/models/*
 	rm -f results/tables/*
-	rm -f report/income-predictor-report.html report/income-predictor-report.pdf
+	rm -f report/income-predictor-report.html
 
