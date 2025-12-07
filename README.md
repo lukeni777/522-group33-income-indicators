@@ -158,7 +158,146 @@ To remove all generated files and start fresh, you can run:
 make clean
 ```
 
+---
 
+## Data analysis pipeline
+
+This section describes the individual steps of the data analysis pipeline
+and how to run them individually if desired. The individual steps are wired
+together using the `Makefile` so that the full workflow can be run with the single `make all` command above.
+
+At a high level, the steps are:
+
+1. **Data loading and cleaning**  
+   - Reads the raw dataset from `data/raw/`.  
+   - Performs cleaning (handling missing values, recoding variables, selecting
+     features).  
+   - Outputs a cleaned dataset into `data/processed/`.
+
+2. **Exploratory data analysis (EDA)**  
+   - Generates summary tables and visualizations to understand the distributions
+     of key variables and relationships between them.  
+   - Saves intermediate figures and tables into the `results/` folder.
+
+3. **Modelling and evaluation**  
+   - Fits one or more predictive models using the processed dataset.  
+   - Evaluates model performance using appropriate metrics and saves results in
+     `results/`.
+
+4. **Report rendering**  
+   - Renders the Quarto report in `report/`, which pulls in the figures,
+     tables, and metrics produced in earlier steps.  
+
+You can inspect the `Makefile` for the exact targets and file dependencies if
+you want to run individual stages.
+
+### Detailed pipeline steps (Makefile targets)
+
+Below is a more detailed description of each step in the Python pipeline and
+how to run it individually from the command line.
+
+1. **Read data – `step_read_data`**  
+   Reads the raw Adult Census dataset from its source and saves it locally in
+   the `data/raw/` folder.
+
+   - With `make` (recommended):
+
+     ```bash
+     make step_read_data
+     ```
+
+   - Under the hood, this runs:
+
+     ```bash
+     python src/read_data.py --out_file="data/raw/adult_census_data.csv"
+     ```
+
+2. **Validate data – `step_data_validation`**  
+   Performs checks on the downloaded data (e.g., row counts, column types,
+   missing values) to ensure it is suitable for analysis.
+
+   - With `make`:
+
+     ```bash
+     make step_data_validation
+     ```
+
+   - Under the hood, this runs:
+
+     ```bash
+     python src/validation.py --in_file="data/raw/adult_census_data.csv"
+     ```
+
+3. **Exploratory data analysis – `step_EDA`**  
+   Creates summary tables and visualizations to explore the distributions of
+   features and their relationships with the income indicator. Artifacts are
+   saved in `results/` (figures and tables).
+
+   - With `make`:
+
+     ```bash
+     make step_EDA
+     ```
+
+4. **Pre-processing – `step_preprocess`**  
+   Splits the data into training and test sets and performs feature
+   engineering/encoding. The processed datasets are saved to
+   `data/processed/`.
+
+   - With `make`:
+
+     ```bash
+     make step_preprocess
+     ```
+
+5. **Model training and evaluation – `step_evaluation`**  
+   Trains the predictive model(s) on the processed training data and evaluates
+   performance on the test data. Metrics and evaluation tables are written to
+   `results/`.
+
+   - With `make`:
+
+     ```bash
+     make step_evaluation
+     ```
+
+6. **Model explainability – `step_explainability`**  
+   Produces explainability artifacts such as feature importance plots or SHAP
+   value summaries to help interpret the model.
+
+   - With `make`:
+
+     ```bash
+     make step_explainability
+     ```
+
+7. **Report rendering – `step_report`**  
+   Renders the Quarto report, which pulls together all of the above artifacts
+   (figures, tables, and metrics) into a single narrative document.
+
+   - With `make`:
+
+     ```bash
+     make step_report
+     ```
+
+   - Under the hood, this runs:
+
+     ```bash
+     quarto render report/income-predictor-report.qmd --to html
+     ```
+
+8. **Cleaning generated files – `clean`**  
+   Removes downloaded data, processed datasets, figures, models, tables, and
+   the rendered HTML report so you can test full reproducibility from scratch.
+
+   - With `make`:
+
+     ```bash
+     make clean
+     ```
+
+---
 # Dependencies
   - conda==23.11.0
   - python=3.9
