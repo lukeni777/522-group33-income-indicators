@@ -30,6 +30,14 @@ You can run the project in two ways:
 Both options assume you start in the project root (the folder that
 contains this README).
 
+Ensure that you have Git installed on your machine. First, clone the repository to your local machine by openning your terminal and run the following commands:
+
+``` bash
+git clone https://github.com/lukeni777/522-group33-income-indicators.git
+cd 522-group33-income-indicators
+```
+
+now choose one of the following options:
 ------------------------------------------------------------------------
 
 ## Option A – Run locally with Conda
@@ -38,20 +46,12 @@ contains this README).
 
 -   A working installation of **Conda** (Mambaforge, Miniconda, or
     Anaconda)
--   **Git** (if you want to clone the repository instead of downloading
-    a ZIP)
 -   Basic command line tools (Terminal on macOS / Linux, Git Bash or
     similar on Windows)
 
-### 2. clone the repository
-open your terminal and run the following commands:
 
-``` bash
-git clone https://github.com/lukeni777/522-group33-income-indicators.git
-cd 522-group33-income-indicators
-```
 
-### 3. Create and activate the environment
+### 2. Create and activate the environment
 
 Create the Conda environment from `environment.yaml`:
 
@@ -66,7 +66,7 @@ our case it is `dsci_522_project_env`):
 conda activate dsci_522_project_env
 ```
 
-### 4. Run the full analysis and render the report
+### 3. Run the full analysis and render the report
 
 We provide a `Makefile` with a convenient `all` target that:
 
