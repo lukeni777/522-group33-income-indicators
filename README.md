@@ -24,7 +24,7 @@ In this analysis, we use machine learning to predict whether an individuals inco
 
 You can run the project in two ways:
 
-1.  **Locally** using Conda and `environment.yml`\
+1.  **Locally** using Conda and `environment.yaml`\
 2.  **Virtually** using a pre-built Docker image from Docker Hub
 
 Both options assume you start in the project root (the folder that
@@ -82,6 +82,12 @@ make all
 ```
 
 After this finishes, you should find the rendered report at `report/report.html`.
+
+To remove all generated files and start fresh, you can run:
+
+``` bash
+make clean
+```
 
 ## Option B – Run the project with Docker
 
@@ -145,6 +151,12 @@ make all
 ```
 
 After this finishes, you should find the rendered report at `report/report.html`.
+
+To remove all generated files and start fresh, you can run:
+
+``` bash
+make clean
+```
 
 
 # Dependencies
