@@ -118,10 +118,11 @@ We also exclude the `native-country` from our visualization. The overwhelming ma
 ![Univariate Distribution of the Categorical Variables](../results/figures/categorical_distribution.png){#fig-categorical  height=72% fig-align="center"}
 
 {{< pagebreak >}}
+
 ## Results
 
 #### Accuracy, Precision, Recall, F1-Score
-Our Logistic Regression model demonstrates robust generalization with a test accuracy of `{python} str(round(income_indicator_classification_report.loc['accuracy', 'precision'], 2) * 100) + '%'`, mirroring the cross-validation mean of `{python} str(round(income_indicator_score.loc['test_accuracy', 'mean'], 2) * 100) + '%' ` and indicating no overfitting. By employing balanced class weights to address dataset imbalance, the model strategically prioritizes Recall of `{python} str(round( income_indicator_classification_report.loc['macro avg', 'recall'], 2))` over Precision of `{python} str(round(income_indicator_classification_report.loc['macro avg', 'precision'], 2)) ` for the high-income class (>50K). This configuration results in an F1-score of `{python} str(round(income_indicator_classification_report.loc['macro avg', 'precision'], 2))`, confirming that while the model successfully identifies the vast majority of high earners, it accepts a higher rate of false positives to ensure potential high-income individuals are rarely missed.
+Our Logistic Regression model demonstrates robust generalization with a test accuracy of `{python} str(round(income_indicator_classification_report.loc['accuracy', 'precision'], 2) * 100) + '%'`, mirroring the cross-validation mean of `{python} str(round(income_indicator_score.loc['test_accuracy', 'mean'], 2) * 100) + '%'` and indicating no overfitting. By employing balanced class weights to address dataset imbalance, the model strategically prioritizes Recall of `{python} str(round( income_indicator_classification_report.loc['macro avg', 'recall'], 2))` over Precision of `{python} str(round(income_indicator_classification_report.loc['macro avg', 'precision'], 2)) ` for the high-income class (>50K). This configuration results in an F1-score of `{python} str(round(income_indicator_classification_report.loc['macro avg', 'precision'], 2))`, confirming that while the model successfully identifies the vast majority of high earners, it accepts a higher rate of false positives to ensure potential high-income individuals are rarely missed.
 
 
 #### Confusion matrix & Classification report
@@ -140,7 +141,7 @@ income_indicator_classification_report
 ### Model Explainability (using SHAP)
 
 #### 1. Model Performance:
-- **Accuracy:** The model achieved an accuracy of `{python} print("This is a placeholder for our  test accuracy score. I need a table in the results repository that I can index to read the test score and post here." )` on the test set.
+- **Accuracy:** The model achieved an accuracy of `{python} str(round(income_indicator_classification_report.loc['accuracy', 'precision'],2) * 100) + "%"` on the test set.
 - **Class Imbalance Handling:** By using class_weight='balanced', we prioritized identifying high-income earners (>50K). This likely resulted in higher Recall for the >50K class (catching more high earners) potentially at the cost of some Precision (more false positives).
 - **Confusion Matrix Analysis:** As seen in the matrix, the model correctly identified high-income individuals, while missing some False positives.
 
