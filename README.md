@@ -10,18 +10,32 @@
 # Project Summary
 In this analysis, we use machine learning to predict whether an individuals income is above or below $50,000. As the government sets out massive investment in Canadian societies to improve the lives of citizens(Housing, Infrastructure and Communities Canada, 2025), we envision our analysis as a means of providing insights to the government as to what investments can drive the best chances of improving an individuals life. The persistent income and wealth inequeality increase presents a strong case for prudent investing to improve lives across all Canadians. (Yassin, Petit, & Abraham, 2024)
 
+# Repository Structure 
+
+- `data/` – raw and processed data files (created by `make`)
+- `src/` – Python scripts for data processing, modelling, evaluation, and explainability
+- `results/` – generated figures, models, and tables (created by `make`)
+- `report/` – Quarto report (`.qmd`) and rendered outputs (`.html`)
+- `environment.yaml` – conda environment specification
+- `Makefile` – pipeline to run the full analysis and render the report
+- `Dockerfile` – recipe for the Docker image
+
 # How to Run the Data Analysis
 To replicate our analysis on your machine:
-1. Clone this GitHub Repository on your local machine:
-   * Click the green ``` Code <> ``` button and copy the URL.
-   * On your local machine's terminal, navigate to the location where you would like this repository to reside in.
-   * Run the command ``` git clone <URL> ``` in the terminal.
+
+Open your terminal and run the following commands
+
+   ```bash
+   #cloning the repository
+   git clone https://github.com/lukeni777/522-group33-income-indicators.git
+   # Navigate into the project directory
+   cd 522-group33-income-indicators
+    ```
 
 ## Running the project with Docker
 
 This project can be run in a reproducible environment using Docker.  
 All commands below should be run from the project root directory
-(the folder that contains `analysis/`, `data/`, `Dockerfile`, etc.).
 
 ### 1. Prerequisites
 
@@ -32,9 +46,30 @@ All commands below should be run from the project root directory
 
 ### 2. Pull the pre-built image from Docker Hub
 
-A pre-built image is available at:
+From the project root, open a terminal and run:
 
-`lukeni777/income-indicators:b8294f1`
+```bash
+# Pull the image from Docker Hub (this may take a few minutes)
+docker pull lukeni777/income-indicators:latest
+```
+### 3. Run the Docker container
+```bash
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+  # Windows (Git Bash / MSYS) – avoid path mangling
+  export MSYS_NO_PATHCONV=1
+  docker run --rm -p 8888:8888 \
+    -v "$(pwd)":/workplace \
+    -w /workplace \
+    lukeni777/income-indicators:latest
+  unset MSYS_NO_PATHCONV
+else
+  # macOS / Linux
+  docker run --rm -p 8888:8888 \
+    -v "$PWD":/workplace \
+    -w /workplace \
+    lukeni777/income-indicators:latest
+fi
+```
 
 From the project root, open a terminal and run the following commands:
 
