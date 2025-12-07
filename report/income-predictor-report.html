@@ -56,7 +56,7 @@ div.csl-indent {
 <link href="income-predictor-report_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="income-predictor-report_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="income-predictor-report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="income-predictor-report_files/libs/bootstrap/bootstrap-1e118674f8eeaf0dc11d6faf9a2d8791.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="income-predictor-report_files/libs/bootstrap/bootstrap-9f7d0516fd88c8a41598d32c1db303ee.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
 
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
@@ -85,9 +85,6 @@ div.csl-indent {
   <ul class="collapse">
   <li><a href="#train-test-split-obey-the-golden-rule" id="toc-train-test-split-obey-the-golden-rule" class="nav-link" data-scroll-target="#train-test-split-obey-the-golden-rule">Train-Test-Split: Obey the Golden Rule</a></li>
   <li><a href="#univariate-distribution-of-the-quantitative-variables" id="toc-univariate-distribution-of-the-quantitative-variables" class="nav-link" data-scroll-target="#univariate-distribution-of-the-quantitative-variables">Univariate Distribution of The Quantitative Variables</a></li>
-  </ul></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
-  <ul class="collapse">
   <li><a href="#model-explainability-using-shap" id="toc-model-explainability-using-shap" class="nav-link" data-scroll-target="#model-explainability-using-shap">Model Explainability (using SHAP)</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
@@ -151,7 +148,7 @@ div.csl-indent {
 Table&nbsp;1: Dataset attributes
 </figcaption>
 <div aria-describedby="tbl-columns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output cell-output-display" data-execution_count="32">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -290,12 +287,8 @@ Figure&nbsp;2: Univariate Distribution of the Categorical Variables
 </figcaption>
 </figure>
 </div>
-<div style="page-break-after: always;"></div>
+<p></p><div style="page-break-after: always;"></div> ## Results<p></p>
 </section>
-</section>
-</section>
-<section id="results" class="level2">
-<h2 class="anchored" data-anchor-id="results">Results</h2>
 <section id="accuracy-precision-recall-f1-score" class="level4">
 <h4 class="anchored" data-anchor-id="accuracy-precision-recall-f1-score">Accuracy, Precision, Recall, F1-Score</h4>
 <p>Our Logistic Regression model demonstrates robust generalization with a test accuracy of 78.0%, mirroring the cross-validation mean of <code>{python} str(round(income_indicator_score.loc['test_accuracy', 'mean'], 2) * 100) + '%'</code> and indicating no overfitting. By employing balanced class weights to address dataset imbalance, the model strategically prioritizes Recall of 0.8 over Precision of 0.71 for the high-income class (&gt;50K). This configuration results in an F1-score of 0.71, confirming that while the model successfully identifies the vast majority of high earners, it accepts a higher rate of false positives to ensure potential high-income individuals are rarely missed.</p>
@@ -321,7 +314,7 @@ Figure&nbsp;3: Normalized Confusion Matrix Showing Model Performance on Unseen T
 Table&nbsp;2: Model performance summary
 </figcaption>
 <div aria-describedby="tbl-classification_report-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output cell-output-display" data-execution_count="33">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -380,6 +373,7 @@ Table&nbsp;2: Model performance summary
 </figure>
 </div>
 </div>
+</section>
 </section>
 <section id="model-explainability-using-shap" class="level3">
 <h3 class="anchored" data-anchor-id="model-explainability-using-shap">Model Explainability (using SHAP)</h3>

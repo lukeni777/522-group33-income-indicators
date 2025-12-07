@@ -34,7 +34,7 @@ We expect that no one engages in the above and maintains a sense of respect towa
 If inappropriate behaviour is detected, participants will be asked to stop and comply immediately. If the participant continues to engage in unacceptable and inappropriate behavior, violating the code of conduct, they can expect to be invetiagted for their violations and if necessary expelled from the community, no longer obtaining access to the project platform. 
 
 ## Incident Reporting Guidelines and Procedures
-If an individual violates the code of conduct, please report it to one of the project creators listed in the repository or directly contact the DSCI522 course intructor, Daniel Chen
+If an individual violates the code of conduct, please report it to one of the project creators listed in the repository. i.e. MDS student Yuexiang Ni via email: lukeni@student.ubc.ca
 
 ## Attribution
 - Derived from [Python Community CoC](https://www.python.org/psf/conduct/)

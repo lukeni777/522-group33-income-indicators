@@ -1,9 +1,9 @@
 # Define the shell to ensure consistency
 SHELL := /bin/bash
 
-.PHONY: all step_read_data step_data_validation step_EDA step_preprocess step_evaluation step_explainability
+.PHONY: all step_read_data step_data_validation step_EDA step_preprocess step_evaluation step_explainability step_report clean
 
-all: step_read_data step_data_validation step_EDA step_preprocess step_evaluation step_explainability
+all: step_read_data step_data_validation step_EDA step_preprocess step_evaluation step_explainability step_report
 
 # 1. Read Data
 step_read_data: src/read_data.py
@@ -30,4 +30,15 @@ step_explainability: src/explainability.py step_evaluation
 	python src/explainability.py --in_train_file="data/processed/adult_census_training_data.csv" --in_test_file="data/processed/adult_census_test_data.csv" --out_dir="results"
 
 # 7. Report (Depends on ALL artifacts)
-# Needs to be added later
+step_report: report/income-predictor-report.qmd step_explainability
+	quarto render report/income-predictor-report.qmd --to html
+
+# Clean all generated files to test reproducibility
+clean:
+	rm -f data/raw/adult_census_data.csv
+	rm -f data/processed/adult_census_training_data.csv data/processed/adult_census_test_data.csv
+	rm -f results/figures/*
+	rm -f results/models/*
+	rm -f results/tables/*
+	rm -f report/income-predictor-report.html
+
