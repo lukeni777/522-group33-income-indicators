@@ -20,18 +20,126 @@ In this analysis, we use machine learning to predict whether an individuals inco
 - `Makefile` – pipeline to run the full analysis and render the report
 - `Dockerfile` – recipe for the Docker image
 
-# How to Run the Data Analysis
-To replicate our analysis on your machine:
+## How to run the data analysis
 
-Open your terminal and run the following commands
+You can run the project in two ways:
 
-   ```bash
-   #cloning the repository
-   git clone https://github.com/lukeni777/522-group33-income-indicators.git
-   # Navigate into the project directory
-   cd 522-group33-income-indicators
-    ```
+1.  **Locally** using Conda and `environment.yml`\
+2.  **Virtually** using a pre-built Docker image from Docker Hub
 
+Both options assume you start in the project root (the folder that
+contains this README).
+
+------------------------------------------------------------------------
+
+## Option A – Run locally with Conda
+
+### 1. Prerequisites
+
+-   A working installation of **Conda** (Mambaforge, Miniconda, or
+    Anaconda)
+-   **Git** (if you want to clone the repository instead of downloading
+    a ZIP)
+-   Basic command line tools (Terminal on macOS / Linux, Git Bash or
+    similar on Windows)
+
+### 2. clone the repository
+open your terminal and run the following commands:
+
+``` bash
+git clone https://github.com/lukeni777/522-group33-income-indicators.git
+cd 522-group33-income-indicators
+```
+
+### 3. Create and activate the environment
+
+Create the Conda environment from `environment.yml`:
+
+``` bash
+conda env create -f environment.yml
+```
+
+Activate the environment (the name is defined in `environment.yml`; in
+our case it is `dsci_522_project_env`):
+
+``` bash
+conda activate dsci_522_project_env
+```
+
+### 4. Run the full analysis and render the report
+
+We provide a `Makefile` with a convenient `all` target that:
+
+1.  Runs the data cleaning and analysis scripts in `src/`\
+2.  Saves any processed data to `data/processed/`\
+3.  Generates figures and tables in `results/`\
+4.  Renders the Quarto report in `report/`
+
+From the project root, run:
+
+``` bash
+make all
+```
+
+After this finishes, you should find the rendered report at `report/report.html`.
+
+## Option B – Run the project with Docker
+
+Running with Docker allows you to use a pre-built image that already
+contains all required dependencies (including JupyterLab). This is
+useful if you do not want to manage Conda environments locally.
+
+### 1. Prerequisites
+
+-   A recent version of **Docker** installed and running\
+-   Internet connection (to pull the image from Docker Hub)
+
+### 2. Pull the pre-built image from Docker Hub
+
+From the project root, open a terminal and run:
+
+``` bash
+# Pull the image from Docker Hub (this may take a few minutes)
+docker pull lukeni777/income-indicators:latest
+```
+
+### 3. Run the container and start JupyterLab
+
+From the same project root, run the following commands.\
+The script below automatically handles the difference between Windows
+and macOS/Linux when mounting the project directory into the container.
+
+``` bash
+# Run the container and start JupyterLab
+
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+  # Windows (Git Bash / MSYS) – avoid path mangling
+  export MSYS_NO_PATHCONV=1
+  docker run --rm -p 8888:8888 \
+    -v "$(pwd)":/workplace \
+    -w /workplace \
+    lukeni777/income-indicators:latest
+  unset MSYS_NO_PATHCONV
+else
+  # macOS / Linux
+  docker run --rm -p 8888:8888 \
+    -v "$PWD":/workplace \
+    -w /workplace \
+    lukeni777/income-indicators:latest
+fi
+```
+
+This will start a JupyterLab server inside the container and print a URL
+in the terminal that looks similar to:
+
+``` text
+http://127.0.0.1:8888/lab?token=...
+```
+
+Copy this URL into your web browser to open JupyterLab.
+
+Inside the JupyterLab file browser, you should see the project files
+under the `/workplace` directory. You can:
 ## Running the project with Docker
 
 This project can be run in a reproducible environment using Docker.  
