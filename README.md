@@ -142,7 +142,9 @@ http://127.0.0.1:8888/lab
 Copy this URL into your web browser to open JupyterLab.
 
 Inside the JupyterLab file browser, you should see the project files
-under the `/workplace` directory. You can run:
+under the `/workplace` directory. 
+
+Open a terminal on Jupyterlab and run:
 
 ``` bash
 make all
