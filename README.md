@@ -81,7 +81,7 @@ From the project root, run:
 make all
 ```
 
-After this finishes, you should find the rendered report at `report/report.html`.
+After this finishes, you should find the rendered report at `report/income-predictor-report.html`.
 
 To remove all generated files and start fresh, you can run:
 
@@ -150,7 +150,7 @@ under the `/workplace` directory. You can run:
 make all
 ```
 
-After this finishes, you should find the rendered report at `report/report.html`.
+After this finishes, you should find the rendered report at `report/income-predictor-report.html`.
 
 To remove all generated files and start fresh, you can run:
 
