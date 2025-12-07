@@ -53,10 +53,10 @@ cd 522-group33-income-indicators
 
 ### 3. Create and activate the environment
 
-Create the Conda environment from `environment.yml`:
+Create the Conda environment from `environment.yaml`:
 
 ``` bash
-conda env create -f environment.yml
+conda env create -f environment.yaml
 ```
 
 Activate the environment (the name is defined in `environment.yml`; in
@@ -130,77 +130,21 @@ fi
 ```
 
 This will start a JupyterLab server inside the container and print a URL
-in the terminal that looks similar to:
 
 ``` text
-http://127.0.0.1:8888/lab?token=...
+http://127.0.0.1:8888/lab
 ```
 
 Copy this URL into your web browser to open JupyterLab.
 
 Inside the JupyterLab file browser, you should see the project files
-under the `/workplace` directory. You can:
-## Running the project with Docker
+under the `/workplace` directory. You can run:
 
-This project can be run in a reproducible environment using Docker.  
-All commands below should be run from the project root directory
-
-### 1. Prerequisites
-
-- Docker installed and running on your machine
-- Internet connection (if pulling the image from Docker Hub)
-
----
-
-### 2. Pull the pre-built image from Docker Hub
-
-From the project root, open a terminal and run:
-
-```bash
-# Pull the image from Docker Hub (this may take a few minutes)
-docker pull lukeni777/income-indicators:latest
-```
-### 3. Run the Docker container
-```bash
-if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-  # Windows (Git Bash / MSYS) – avoid path mangling
-  export MSYS_NO_PATHCONV=1
-  docker run --rm -p 8888:8888 \
-    -v "$(pwd)":/workplace \
-    -w /workplace \
-    lukeni777/income-indicators:latest
-  unset MSYS_NO_PATHCONV
-else
-  # macOS / Linux
-  docker run --rm -p 8888:8888 \
-    -v "$PWD":/workplace \
-    -w /workplace \
-    lukeni777/income-indicators:latest
-fi
+``` bash
+make all
 ```
 
-From the project root, open a terminal and run the following commands:
-
-```bash
-# Pull the image from Docker Hub (this may take a few minutes)
-docker pull lukeni777/income-indicators:latest
-
-# Run the container and start JupyterLab
-docker run --rm -p 8888:8888 \
-  -v "$PWD":/workplace \
-  -w /workplace \
-  lukeni777/income-indicators:latest
-```
-This will start a JupyterLab server inside the container and print a URL on the terminal like:
-
-http://127.0.0.1:8888/lab
-
-Copy this URL into your browser to open JupyterLab.
-
-In the left file browser, you should see the project files under /workplace
-(e.g., the analysis/ and data/ folders).
-Open the notebook(s) in analysis/ to run the report.
-
+After this finishes, you should find the rendered report at `report/report.html`.
 
 
 # Dependencies
