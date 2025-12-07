@@ -164,6 +164,9 @@ After this finishes, you should find the rendered report at `report/report.html`
   - vegafusion=1.6.9 
   - vl-convert-python=1.7.0
   - altair_ally>=0.1.1 
+  - quarto=1.8.26
+  - make=4.3
+  - conda-lock=3.0.4
 
 # License Information
 This project is licensed under the terms of the MIT Licence, offered under the [MIT open source license](https://opensource.org/license/MIT). See the [LICENSE.md](https://github.com/lukeni777/522-group33-income-indicators/blob/main/LICENSE) file for more information.
