@@ -85,9 +85,6 @@ div.csl-indent {
   <ul class="collapse">
   <li><a href="#train-test-split-obey-the-golden-rule" id="toc-train-test-split-obey-the-golden-rule" class="nav-link" data-scroll-target="#train-test-split-obey-the-golden-rule">Train-Test-Split: Obey the Golden Rule</a></li>
   <li><a href="#univariate-distribution-of-the-quantitative-variables" id="toc-univariate-distribution-of-the-quantitative-variables" class="nav-link" data-scroll-target="#univariate-distribution-of-the-quantitative-variables">Univariate Distribution of The Quantitative Variables</a></li>
-  </ul></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
-  <ul class="collapse">
   <li><a href="#model-explainability-using-shap" id="toc-model-explainability-using-shap" class="nav-link" data-scroll-target="#model-explainability-using-shap">Model Explainability (using SHAP)</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
@@ -145,13 +142,13 @@ div.csl-indent {
 <p>For our dataset, we use the Adult dataset sourced from the UC Irvine Machine Learning Repository (<span class="citation" data-cites="UCI_repo">Becker and Kohavi (<a href="#ref-UCI_repo" role="doc-biblioref">1996</a>)</span>). The dataset contains 14 features obtained from census data to describe an individual’s attributes. The target is a categorical column comprised of a binary outcome of whether an individual earns more than USD 50,000(&gt;50K) or USD 50,000 or less (&lt;=50K).</p>
 <p>Below, <a href="#tbl-columns" class="quarto-xref">Table&nbsp;1</a> lists the features in the dataset along with our target, <em>income</em>. Note that not all features were used in the model generation. The specific excluded features as well as the reasoning for exclusion is described further on.</p>
 <div class="cell" data-tbl-colwidths="[60,40]" data-execution_count="2">
-<div id="tbl-columns" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="2" data-tbl-colwidths="[60,40]">
+<div id="tbl-columns" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-colwidths="[60,40]" data-execution_count="2">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-columns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Table&nbsp;1: Dataset attributes
 </figcaption>
 <div aria-describedby="tbl-columns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output cell-output-display" data-execution_count="32">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -290,12 +287,8 @@ Figure&nbsp;2: Univariate Distribution of the Categorical Variables
 </figcaption>
 </figure>
 </div>
-<div style="page-break-after: always;"></div>
+<p></p><div style="page-break-after: always;"></div> ## Results<p></p>
 </section>
-</section>
-</section>
-<section id="results" class="level2">
-<h2 class="anchored" data-anchor-id="results">Results</h2>
 <section id="accuracy-precision-recall-f1-score" class="level4">
 <h4 class="anchored" data-anchor-id="accuracy-precision-recall-f1-score">Accuracy, Precision, Recall, F1-Score</h4>
 <p>Our Logistic Regression model demonstrates robust generalization with a test accuracy of 78.0%, mirroring the cross-validation mean of <code>{python} str(round(income_indicator_score.loc['test_accuracy', 'mean'], 2) * 100) + '%'</code> and indicating no overfitting. By employing balanced class weights to address dataset imbalance, the model strategically prioritizes Recall of 0.8 over Precision of 0.71 for the high-income class (&gt;50K). This configuration results in an F1-score of 0.71, confirming that while the model successfully identifies the vast majority of high earners, it accepts a higher rate of false positives to ensure potential high-income individuals are rarely missed.</p>
@@ -321,7 +314,7 @@ Figure&nbsp;3: Normalized Confusion Matrix Showing Model Performance on Unseen T
 Table&nbsp;2: Model performance summary
 </figcaption>
 <div aria-describedby="tbl-classification_report-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output cell-output-display" data-execution_count="33">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -380,6 +373,7 @@ Table&nbsp;2: Model performance summary
 </figure>
 </div>
 </div>
+</section>
 </section>
 <section id="model-explainability-using-shap" class="level3">
 <h3 class="anchored" data-anchor-id="model-explainability-using-shap">Model Explainability (using SHAP)</h3>
