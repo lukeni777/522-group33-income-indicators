@@ -273,7 +273,7 @@ how to run it individually from the command line.
 
 7. **Report rendering – `step_report`**  
    Renders the Quarto report, which pulls together all of the above artifacts
-   (figures, tables, and metrics) into a single narrative document.
+   (figures, tables, and metrics) into a single narrative document. 
 
    - With `make`:
 
