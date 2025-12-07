@@ -41,4 +41,5 @@ clean:
 	rm -f results/models/*
 	rm -f results/tables/*
 	rm -f report/income-predictor-report.html
+	rm -f report/income-predictor-report.pdf
 
