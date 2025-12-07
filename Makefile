@@ -38,7 +38,6 @@ step_report: report/income-predictor-report.qmd step_explainability
 clean:
 	rm -f data/raw/adult_census_data.csv
 	rm -f data/processed/adult_census_training_data.csv data/processed/adult_census_test_data.csv
-	rm -f results/*
 	rm -f results/figures/*
 	rm -f results/models/*
 	rm -f results/tables/*
