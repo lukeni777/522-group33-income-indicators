@@ -30,8 +30,6 @@ def main(in_file, out_dir):
     # Recast numerical featuers to int data types after Impute
     adult_train_imp = adult_train_imp.astype({'age':'int64',
                         'fnlwgt': 'int64',
-                        'capital-gain': 'int64',
-                        'capital-loss': 'int64',
                         'hours-per-week': 'int64'})
 
 #-----------------------EDA Visualisations-----------------------
@@ -47,7 +45,7 @@ def main(in_file, out_dir):
     chart2 =  aly.dist(
           adult_train_imp.select_dtypes(include='object').drop(
                 columns=['relationship', 'sex','education-num', 'race', 
-                         'native-country']), 
+                         'native-country', 'income_encoded', 'capital-gain', 'capital-loss']), 
          dtype='object', color='income'
          ).properties(title="Distribution of Categorical Features")
     chart2.save(os.path.join(fig_dir, "categorical_distribution.png"))

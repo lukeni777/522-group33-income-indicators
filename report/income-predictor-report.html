@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Luke Ni, Michael Oyatsi, Nishanth Kumarasamy &amp; Shruti Sasi">
+<meta name="dcterms.date" content="2025-12-04">
+
+<title>Predicting Income Category From Socioeconomic Characteristics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="income-predictor-report_files/libs/clipboard/clipboard.min.js"></script>
+<script src="income-predictor-report_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="income-predictor-report_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="income-predictor-report_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="income-predictor-report_files/libs/quarto-html/popper.min.js"></script>
+<script src="income-predictor-report_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="income-predictor-report_files/libs/quarto-html/anchor.min.js"></script>
+<link href="income-predictor-report_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="income-predictor-report_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="income-predictor-report_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="income-predictor-report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="income-predictor-report_files/libs/bootstrap/bootstrap-1e118674f8eeaf0dc11d6faf9a2d8791.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#executive-summary" id="toc-executive-summary" class="nav-link active" data-scroll-target="#executive-summary">Executive Summary</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  </ul></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#classifier-selection" id="toc-classifier-selection" class="nav-link" data-scroll-target="#classifier-selection">Classifier Selection</a></li>
+  </ul></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis">Exploratory Data Analysis</a>
+  <ul class="collapse">
+  <li><a href="#train-test-split-obey-the-golden-rule" id="toc-train-test-split-obey-the-golden-rule" class="nav-link" data-scroll-target="#train-test-split-obey-the-golden-rule">Train-Test-Split: Obey the Golden Rule</a></li>
+  <li><a href="#univariate-distribution-of-the-quantitative-variables" id="toc-univariate-distribution-of-the-quantitative-variables" class="nav-link" data-scroll-target="#univariate-distribution-of-the-quantitative-variables">Univariate Distribution of The Quantitative Variables</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <ul class="collapse">
+  <li><a href="#model-explainability-using-shap" id="toc-model-explainability-using-shap" class="nav-link" data-scroll-target="#model-explainability-using-shap">Model Explainability (using SHAP)</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="../income-predictor-report.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Predicting Income Category From Socioeconomic Characteristics</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Luke Ni, Michael Oyatsi, Nishanth Kumarasamy &amp; Shruti Sasi </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 4, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div style="page-break-after: always;"></div>
+<section id="executive-summary" class="level2">
+<h2 class="anchored" data-anchor-id="executive-summary">Executive Summary</h2>
+<p>Our team set out to infer what socioeconomic factors contribute most to an individual’s wealth. With our analysis and model, we envision this data being used by government and NGOs in determining what social investments can be made to improve people’s lives.</p>
+<p>To accomplish this, we built a classification model to predict an individual’s income group, split by whether they are high earners (&gt; USD 50,000) or low earners (&lt;= USD 50,000). Using a Logistic Regression classifier, our model accuracy was 78.0% on unseen test data with an associated F1 score of 0.72. To address the class imbalance in the data, we used a balanced weight approach while building our model. We also sought to understand what socioeconomic characteristics play a the biggest role in determining an individual’s income group. Using SHAP analysis, our findings show that of the features in our model, Marital Status, Age &amp; Education are the biggest drivers of a High Income output.</p>
+<p>While the Logistic Regression classifier was chosen to easier identify the socioeconomic features that are drivers of high income, we see an opportunity to use an ensemble model such as Random Forest Classification to improve the model’s prediction metrics. We also note the limitation of our findings that the strongest economic indicators for wealth are limited only to the features that were available to us in the dataset. There presents an opportunity to further explore what other indicators are stronger predictors through addition of more features, or feature engineering of the present features with a subject matter expert.</p>
+</section>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>How is an individual’s income affected by other socioeconomic factors? This is the question our team set out to investigate. Socioeconomic status here is defined as a way of describing people based on their education, income and type of job (<span class="citation" data-cites="socioeconomic_status">National Cancer Institute (<a href="#ref-socioeconomic_status" role="doc-biblioref">2025</a>)</span>). With the diversity of backgrounds that can exist in society, we set out to understand what factors contribute most to an individual’s income.</p>
+<p>In this analysis, we use machine learning to predict whether an individual’s income is above or below $50,000. As the government sets out massive investment in Canadian societies to improve the lives of citizens(<span class="citation" data-cites="housing_canada">Housing, Infrastructure and Communities Canada (<a href="#ref-housing_canada" role="doc-biblioref">2025</a>)</span>), we envision our analysis as a means of providing insights to the government as to what investments can drive the best chances of improving an individual’s life. The persistent income and wealth inequality increase presents a strong case for prudent investing to improve lives across all Canadians. (<span class="citation" data-cites="income_inequality">Yassin, Petit, and Abraham (<a href="#ref-income_inequality" role="doc-biblioref">2024</a>)</span>)</p>
+<p>Note that while we use the features in this data to draw conclusions on the indicators of wealth, we also note that the socieconomic indicators noted in our report are only a subset of all possible indicators that could contribute to an indivduals wealth outcome. We acknowledge the assumptions put forward by our analysis and note that further inquest and findings are better placed to be performed in conjuction with an anthropologist or other better placed subject matter experts.</p>
+<section id="data" class="level3">
+<h3 class="anchored" data-anchor-id="data">Data</h3>
+<p>For our dataset, we use the Adult dataset sourced from the UC Irvine Machine Learning Repository (<span class="citation" data-cites="UCI_repo">Becker and Kohavi (<a href="#ref-UCI_repo" role="doc-biblioref">1996</a>)</span>). The dataset contains 14 features obtained from census data to describe an individual’s attributes. The target is a categorical column comprised of a binary outcome of whether an individual earns more than USD 50,000(&gt;50K) or USD 50,000 or less (&lt;=50K).</p>
+<p>Below, <a href="#tbl-columns" class="quarto-xref">Table&nbsp;1</a> lists the features in the dataset along with our target, <em>income</em>. Note that not all features were used in the model generation. The specific excluded features as well as the reasoning for exclusion is described further on.</p>
+<div class="cell" data-tbl-colwidths="[60,40]" data-execution_count="2">
+<div id="tbl-columns" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="2" data-tbl-colwidths="[60,40]">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-columns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Dataset attributes
+</figcaption>
+<div aria-describedby="tbl-columns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-display" data-execution_count="32">
+<div>
+
+
+<table class="dataframe do-not-create-environment cell caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Features</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>age</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>workclass</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>fnlwgt</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>education</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>education-num</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>marital-status</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>occupation</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>relationship</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>race</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>sex</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>capital-gain</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>capital-loss</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>hours-per-week</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>native-country</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>income</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>income_encoded</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>The data and the descriptions of the corresponding attributes can be explored using this <a href="https://archive.ics.uci.edu/dataset/2/adult">link</a></p>
+<div style="page-break-after: always;"></div>
+</section>
+</section>
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">Methods</h2>
+<section id="classifier-selection" class="level3">
+<h3 class="anchored" data-anchor-id="classifier-selection">Classifier Selection</h3>
+<p>Since our project had the dual goal of creating an effective classifier, as well as understand the interaction and strength of the features used by our classifier, we chose to use a Logistic Regression classifier. Our model selection would enable us not only to build an effective classifier, but also to extract coefficient names and magnitudes that were used in the classification. The baseline model performance provided by the UC Irvine Machine Learning Repository for different models also helped us in our selection since the Logistic Regression classifier has been shown to perform just below the standard of ensemble models such as XGBoost and Random Forest Classifier.</p>
+</section>
+</section>
+<section id="exploratory-data-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h2>
+<p>Prior to model fitting and feature selection, we first perform EDA to understand the distribution of our features as it relates to our target.</p>
+<section id="train-test-split-obey-the-golden-rule" class="level3">
+<h3 class="anchored" data-anchor-id="train-test-split-obey-the-golden-rule">Train-Test-Split: Obey the Golden Rule</h3>
+<p>Before proceeding with further EDA and visualization of the data, we split and stash a test set from our data in order to evaluate our model performance on unseen data in accordance with the principles of the Golden rule of machine learning. The training and test data that we used in our analysis can be referenced in data directory of this repository.</p>
+</section>
+<section id="univariate-distribution-of-the-quantitative-variables" class="level3">
+<h3 class="anchored" data-anchor-id="univariate-distribution-of-the-quantitative-variables">Univariate Distribution of The Quantitative Variables</h3>
+<p><em>Note - Visualization of the distributions below using the altair-ally python package (<span class="citation" data-cites="ostblom_altair_ally">Ostblom (<a href="#ref-ostblom_altair_ally" role="doc-biblioref">2020</a>)</span>) is performed with code adapted from UBC’s DSCI-573: Feature and Model Selection Course. Reference on the Altair Ally package can be found in using <a href="https://vega.github.io/altair_ally/intro.html">this external link</a></em></p>
+<p>We first investigate the distribution of the dataset’s quantitative variables split against the respective income brackets summarized in <a href="#fig-quant" class="quarto-xref">Figure&nbsp;1</a>. From the plots below, we pay special focus on the age distribution of the respondents. Both distributions are right-skewed. Income earners at or below USD 50,000 tend to be younger than fellow respondents earning above USD 50,000.</p>
+<p>Of note also is the age distribution of hours worked per week, with most respondents in both income brackets reporting about 40 hours per week. The <code>fnlweight</code> feature is a final numerical value representing the final weight of the record. This value can be viewed as the number of people represented by the row. Without further breakdown on the methods or derivation of this value, we chose to ignore it in our analysis.</p>
+<p>Similarly, no information is provided on the numerical features <code>capital-loss</code> and <code>capital-gain</code>. These fields may however contain strong predictive value for identifying higher-income earners, so we chose to maintain this feature and perform binary encoding e.g.&nbsp;any capital-gain above the threshold of zero is encoded as True while all values below zero are encoded as False. This choice was motivated by the need to maintain the information value of the features while smoothing out the noise due to a lack of detailed information from the data’s repository.</p>
+<div id="fig-quant" class="quarto-float quarto-figure quarto-figure-left anchored" data-fig-align="left">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-quant-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../results/figures/quantitative_distribution.png" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-quant-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Univariate Distribution of the Quantitative Variables
+</figcaption>
+</figure>
+</div>
+<section id="univariate-distribution-of-the-categorical-variables" class="level4">
+<h4 class="anchored" data-anchor-id="univariate-distribution-of-the-categorical-variables">Univariate Distribution of the Categorical Variables</h4>
+<p>We also review the distribution of select categorical variables summarized in <a href="#fig-categorical" class="quarto-xref">Figure&nbsp;2</a></p>
+<p>From the first histogram of <code>income</code> distribution, we can see that the dataset contains more records of low income earners compared to high income earners, a ration of about 3:1.</p>
+<p>Reviewing the marital status of distribution, we can see that the distribution of high income earners is concentrated primarily on married respondents with scant representation the other marital status groups. Note that the orignal dataset contains 3 distinc married groups: <code>Married-AF-spouse</code> for respondents whose partners are in the Army, <code>Married-civ-spouse</code> for individuals married to civilian spouses &amp; <code>Married-spouse-absent</code>. For simplification, all values have been combined into one variable <code>Married</code>.</p>
+<p>When analysing the <code>workclass</code> feature, a feature to classify the respondent’s employer, we notice that high income earners are represented primarily in the private sector and less so in other employer categories.</p>
+<p>While the distribution of the <code>occupation</code> feature is less conclusive, we see that high income earners in <code>exec-managerial</code> and <code>prof-specialty</code>, executive management and professional specialties respectively. Likewise when reviewing the <code>education</code> feature, we can see that high income earners tend to have at least some college education and are barely present in respondents who did not finish high school (For clarity, 12th grade is the last year of high school)</p>
+<p>In order to prevent propagating inherent societal biases in our model, the following categories are not considered for feature or model selection: <code>race</code> &amp; <code>sex</code>.</p>
+<p>Moreover, the <code>relationship</code> feature, which represents the relationship the observation has relative to others is not considered as the useful information is encoded within the respondent’s marital status.</p>
+<p>We also exclude the <code>native-country</code> from our visualization. The overwhelming majority of the respondents are American-born and with little information on other information regarding the foreign-born respondents (e.g.&nbsp;how long they have been in the USA), we exclude this feature from our model. </p><div style="page-break-after: always;"></div><p></p>
+<div id="fig-categorical" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-categorical-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../results/figures/categorical_distribution.png" class="quarto-figure quarto-figure-center figure-img" style="height:72.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-categorical-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Univariate Distribution of the Categorical Variables
+</figcaption>
+</figure>
+</div>
+<div style="page-break-after: always;"></div>
+</section>
+</section>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
+<section id="accuracy-precision-recall-f1-score" class="level4">
+<h4 class="anchored" data-anchor-id="accuracy-precision-recall-f1-score">Accuracy, Precision, Recall, F1-Score</h4>
+<p>Our Logistic Regression model demonstrates robust generalization with a test accuracy of 78.0%, mirroring the cross-validation mean of <code>{python} str(round(income_indicator_score.loc['test_accuracy', 'mean'], 2) * 100) + '%'</code> and indicating no overfitting. By employing balanced class weights to address dataset imbalance, the model strategically prioritizes Recall of 0.8 over Precision of 0.71 for the high-income class (&gt;50K). This configuration results in an F1-score of 0.71, confirming that while the model successfully identifies the vast majority of high earners, it accepts a higher rate of false positives to ensure potential high-income individuals are rarely missed.</p>
+</section>
+<section id="confusion-matrix-classification-report" class="level4">
+<h4 class="anchored" data-anchor-id="confusion-matrix-classification-report">Confusion matrix &amp; Classification report</h4>
+<p>The confusion matrix <a href="#fig-confusion" class="quarto-xref">Figure&nbsp;3</a> as well confirms our high-recall strategy: the model successfully identifies the vast majority of high-income earners (minimizing False Negatives), though this aggressiveness results in more lower-income individuals being incorrectly flagged (higher False Positives).</p>
+<div id="fig-confusion" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-confusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../results/figures/income_indicator_confusion_matrix.png" style="height:38.0%" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-confusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Normalized Confusion Matrix Showing Model Performance on Unseen Test Data
+</figcaption>
+</figure>
+</div>
+<p>We summarize the model performance against some key metrics in <a href="#tbl-classification_report" class="quarto-xref">Table&nbsp;2</a> below.</p>
+<div class="cell" data-execution_count="3">
+<div id="tbl-classification_report" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="3">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-classification_report-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Model performance summary
+</figcaption>
+<div aria-describedby="tbl-classification_report-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-display" data-execution_count="33">
+<div>
+
+
+<table class="dataframe do-not-create-environment cell caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">precision</th>
+<th data-quarto-table-cell-role="th">recall</th>
+<th data-quarto-table-cell-role="th">f1-score</th>
+<th data-quarto-table-cell-role="th">support</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">&lt;=50K</th>
+<td>0.947</td>
+<td>0.770</td>
+<td>0.850</td>
+<td>9468.000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">&gt;50K</th>
+<td>0.466</td>
+<td>0.824</td>
+<td>0.596</td>
+<td>2306.000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">accuracy</th>
+<td>0.781</td>
+<td>0.781</td>
+<td>0.781</td>
+<td>0.781</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">macro avg</th>
+<td>0.707</td>
+<td>0.797</td>
+<td>0.723</td>
+<td>11774.000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">weighted avg</th>
+<td>0.853</td>
+<td>0.781</td>
+<td>0.800</td>
+<td>11774.000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="model-explainability-using-shap" class="level3">
+<h3 class="anchored" data-anchor-id="model-explainability-using-shap">Model Explainability (using SHAP)</h3>
+<section id="model-performance" class="level4">
+<h4 class="anchored" data-anchor-id="model-performance">1. Model Performance:</h4>
+<ul>
+<li><strong>Accuracy:</strong> The model achieved an accuracy of None on the test set.</li>
+<li><strong>Class Imbalance Handling:</strong> By using class_weight=‘balanced’, we prioritized identifying high-income earners (&gt;50K). This likely resulted in higher Recall for the &gt;50K class (catching more high earners) potentially at the cost of some Precision (more false positives).</li>
+<li><strong>Confusion Matrix Analysis:</strong> As seen in the matrix, the model correctly identified high-income individuals, while missing some False positives.</li>
+</ul>
+</section>
+<section id="feature-importance-explainability" class="level4">
+<h4 class="anchored" data-anchor-id="feature-importance-explainability">2. Feature Importance (Explainability)</h4>
+<p>We used SHAP values,summarized in <a href="#fig-shap" class="quarto-xref">Figure&nbsp;4</a>, to interpret the model’s decisions by assigning an ‘importance score’ to every feature for every prediction. This allows us to see exactly which factors pushed a specific individual’s prediction towards the high-income or low-income category, ultimately helping us understand the key factors that predict an individual’s income.</p>
+<ul>
+<li><strong>Marital Status:</strong> Being Married is often the strongest positive predictor of high income (indicated by the long red bar pushing to the right in the SHAP plots).</li>
+<li><strong>Age:</strong> The dependence plot shows a positive correlation between age and income up to a certain point (likely 50-60 years old), after which it may plateau or decrease.</li>
+<li><strong>Education:</strong> Higher education-num consistently pushes predictions toward the &gt;50K category.</li>
+<li><strong>Hours per week:</strong> Individuals investing more hours per week are overwhelmingly classified as high income.</li>
+</ul>
+<div id="fig-shap" class="quarto-float quarto-figure quarto-figure-left anchored" data-fig-align="left">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-shap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../results/figures/income_indicator_explainability.png" class="quarto-figure quarto-figure-left figure-img" style="height:45.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-shap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Summary of High Impact features using SHAP
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="conclusion" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
+<p>This analysis successfully established a robust predictive model for income classification, leveraging logistic regression to identify the key drivers of economic disparities. By intentionally designing a pipeline that addresses class imbalance, our model demonstrates a high sensitivity to detecting high-income earners, ensuring that significant predictors of wealth are not overlooked. While we prioritized ethical fairness by excluding explicit racial and relationship identifiers, the model’s performance confirms that other structural factors—specifically education, marital status, and career stability—remain powerful proxies for economic success in the current landscape.</p>
+<p>From a socioeconomic perspective, our results align closely with established economic theory. <strong>Education</strong> emerged as a dominant differentiator, validating the concept of human capital where higher investment in skills directly correlates with earning potential. Similarly, <strong>Marital Status</strong> proved to be a substantial predictor, likely reflecting the economic stability often associated with dual-income households or the “marriage premium” phenomenon observed in labor economics. <strong>Age</strong> also displayed a strong positive trend, illustrating the natural accumulation of experience and seniority over a career trajectory, though this effect naturally plateaus as individuals near retirement.</p>
+<p>Our findings on the socioeconomic indicators that contribute to wealth are limited to the features that were available to us from the UC Irvine Machine Learning repository. However, our initial findings point to an opportunity available to further identify other indicators and would be subject to an availability of a robust dataset with additional features.</p>
+</section>
+<section id="references" class="level3 unnumbered">
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-UCI_repo" class="csl-entry" role="listitem">
+Becker, Barry, and Ron Kohavi. 1996. <span>“Adult.”</span> UCI Machine Learning Repository. <a href="https://doi.org/10.24432/C5XW20">https://doi.org/10.24432/C5XW20</a>.
+</div>
+<div id="ref-housing_canada" class="csl-entry" role="listitem">
+Housing, Infrastructure and Communities Canada. 2025. <span>“Investing in Canada Plan – Building a Better Canada.”</span> <a href="https://housing-infrastructure.canada.ca/plan/about-invest-apropos-eng.html">https://housing-infrastructure.canada.ca/plan/about-invest-apropos-eng.html</a>.
+</div>
+<div id="ref-socioeconomic_status" class="csl-entry" role="listitem">
+National Cancer Institute. 2025. <span>“Socioeconomic Status.”</span> NCI Dictionary of Cancer Terms. <a href="https://www.cancer.gov/publications/dictionaries/cancer-terms/def/socioeconomic-status">https://www.cancer.gov/publications/dictionaries/cancer-terms/def/socioeconomic-status</a>.
+</div>
+<div id="ref-ostblom_altair_ally" class="csl-entry" role="listitem">
+Ostblom, Joel. 2020. <span>“Altair Ally: Introduction.”</span> GitHub Pages. <a href="https://vega.github.io/altair_ally/intro.html">https://vega.github.io/altair_ally/intro.html</a>.
+</div>
+<div id="ref-income_inequality" class="csl-entry" role="listitem">
+Yassin, Sami, Gillian Petit, and Yodit Abraham. 2024. <span>“The Troubling Rise of Income and Wealth Inequality in Canada.”</span> <em>Policy Options</em>. <a href="https://policyoptions.irpp.org/2024/07/income-wealth-inequality/">https://policyoptions.irpp.org/2024/07/income-wealth-inequality/</a>.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
