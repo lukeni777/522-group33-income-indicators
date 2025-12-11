@@ -3,7 +3,7 @@
 
 A data analysis project undertaken as part of DSCI 522; a course in the Master of Data Science program at the University of British Columbia.
 
-# Contributers/Authors
+# Contributors/Authors
 * Yuexiang Ni
 * Michael Oyatsi
 * Shruti Sasi
