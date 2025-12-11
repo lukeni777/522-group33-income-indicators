@@ -102,7 +102,7 @@ We also review the distribution of select categorical variables summarized in @f
 
 From the first histogram of `income` distribution, we can see that the dataset contains more records of low income earners compared to high income earners, a ration of about 3:1. 
 
-Reviewing the marital status of distribution, we can see that the distribution of high income earners is concentrated primarily on married respondents with scant representation the other marital status groups. Note that the orignal dataset contains 3 distinc married groups: `Married-AF-spouse` for respondents whose partners are in the Army, `Married-civ-spouse` for individuals married to civilian spouses & `Married-spouse-absent`. For simplification, all values have been combined into one variable `Married`. 
+Reviewing the marital status of distribution, we can see that the distribution of high income earners is concentrated primarily on married respondents with scant representation the other marital status groups. Note that the original dataset contains 3 distinc married groups: `Married-AF-spouse` for respondents whose partners are in the Army, `Married-civ-spouse` for individuals married to civilian spouses & `Married-spouse-absent`. For simplification, all values have been combined into one variable `Married`. 
 
 When analysing the `workclass` feature, a feature to classify the respondent's employer, we notice that high income earners are represented primarily in the private sector and less so in other employer categories. 
 
