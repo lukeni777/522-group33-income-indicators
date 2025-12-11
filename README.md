@@ -37,7 +37,7 @@ You can run the project in two ways:
 Both options assume you start in the project root (the folder that
 contains this README).
 
-Ensure that you have Git installed on your machine. First, clone the repository to your local machine by openning your terminal and run the following commands:
+Ensure that you have Git installed on your machine. First, clone the repository to your local machine by opening your terminal and run the following commands:
 
 ``` bash
 git clone https://github.com/lukeni777/522-group33-income-indicators.git
