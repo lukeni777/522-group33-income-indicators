@@ -5,7 +5,7 @@ FROM condaforge/miniforge3:latest
 # curl: used to download files
 RUN apt-get update && apt-get install -y \
   curl \
-  make \
+  make
 
 # Install quarto -----
 # install Quarto based on target architecture
