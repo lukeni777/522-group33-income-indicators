@@ -306,25 +306,27 @@ how to run it individually from the command line.
 
 ---
 # Dependencies
-  - conda==23.11.0
-  - python=3.9
-  - pandas==2.2.1
-  - jupyterlab==4.0.10
-  - numpy==1.26.4
-  - scikit-learn==1.4.0
-  - matplotlib==3.8.2
-  - shap==0.39.0
+  - python=3.12.12
+  - pandas=2.2
+  - jupyterlab=4.0
+  - numpy=1.26
+  - scikit-learn=1.7.2
+  - matplotlib=3.10.8
+  - pandera-pandas=0.27.0
+  - scipy=1.16.3
+  - shap=0.48.0  
   - tabulate=0.9.0
-  - pip==24.0
-  - altair=5.3.0
-  - ucimlrepo
-  - vegafusion-python-embed=1.6.9
+  - pip=25.3
+  - altair=5.5
+  - vegafusion-python-embed=1.6.9 
   - vegafusion=1.6.9 
-  - vl-convert-python=1.7.0
-  - altair_ally>=0.1.1 
+  - vl-convert-python=1.8.0
+  - conda-lock=3.0.4
   - quarto=1.8.26
   - make=4.3
-  - conda-lock=3.0.4
+  - pip:
+      - ucimlrepo==0.0.7
+      - altair_ally==0.1.1 
 
 # License Information
 This project is licensed under the terms of the MIT Licence, offered under the [MIT open source license](https://opensource.org/license/MIT). See the [LICENSE.md](https://github.com/lukeni777/522-group33-income-indicators/blob/main/LICENSE) file for more information.
