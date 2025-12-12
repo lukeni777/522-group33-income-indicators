@@ -1,8 +1,5 @@
-# tests/test_data.py
-
 import os
 import pandas as pd
-import pytest
 import src.read_data as rd
 
 
@@ -17,21 +14,16 @@ class DummyDataset:
         self.data = DummyData()
 
 
-# patch download so tests don't hit the network
-mp = pytest.MonkeyPatch()
-mp.setattr(rd, "fetch_ucirepo", lambda id: DummyDataset())
+def test_fetch_and_save_ucimlrepo_dataset(monkeypatch):
+    monkeypatch.setattr(rd, "fetch_ucirepo", lambda id: DummyDataset())
 
-# write into the repo (your function already creates directories)
-out_file = "data/raw/adult_census_data.csv"
-df = rd.fetch_and_save_ucimlrepo_dataset(dataset_id=2, out_file=out_file)
+    out_file = "data/raw/adult_census_data.csv"
+    df = rd.fetch_and_save_ucimlrepo_dataset(dataset_id=2, out_file=out_file)
 
-# verify file exists + content looks right
-assert os.path.exists(out_file)
-assert df.shape == (2, 2)
-assert list(df.columns) == ["age", "income"]
+    assert os.path.exists(out_file)
+    assert df.shape == (2, 2)
+    assert list(df.columns) == ["age", "income"]
 
-df_read = pd.read_csv(out_file)
-assert df_read["age"].tolist() == [30, 40]
-assert df_read["income"].tolist() == ["<=50K", ">50K"]
-
-mp.undo()
+    df_read = pd.read_csv(out_file)
+    assert df_read["age"].tolist() == [30, 40]
+    assert df_read["income"].tolist() == ["<=50K", ">50K"]
