@@ -2,7 +2,7 @@
 import click
 import pandas as pd
 from ucimlrepo import fetch_ucirepo
-
+import os
 
 def fetch_and_save_ucimlrepo_dataset(dataset_id=2, out_file="data/raw/adult_census_data.csv"):
     """
