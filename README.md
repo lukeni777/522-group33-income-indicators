@@ -1,6 +1,8 @@
 # 522-group33-income-indicators
 ****
 
+A data analysis project undertaken as part of DSCI 522; a course in the Master of Data Science program at the University of British Columbia.
+
 # Contributers/Authors
 * Yuexiang Ni
 * Michael Oyatsi
@@ -8,7 +10,12 @@
 * Nishanth K.
 
 # Project Summary
-In this analysis, we use machine learning to predict whether an individuals income is above or below $50,000. As the government sets out massive investment in Canadian societies to improve the lives of citizens(Housing, Infrastructure and Communities Canada, 2025), we envision our analysis as a means of providing insights to the government as to what investments can drive the best chances of improving an individuals life. The persistent income and wealth inequeality increase presents a strong case for prudent investing to improve lives across all Canadians. (Yassin, Petit, & Abraham, 2024)
+Our team set out to infer what socioeconomic factors contribute most to an individual's wealth. With our analysis and model, we envision this data being used by government and NGOs in determining what social investments can be made to improve people's lives. 
+
+To accomplish this, we built a classification model to predict an individual's income group, split by whether they are high earners (> USD 50,000) or low earners (<= USD 50,000). Using a Logistic Regression classifier, our model accuracy was 78% on unseen test data with an associated F1 score of 0.72. To address the class imbalance in the data, we used a balanced weight approach while building our model. We also sought to understand what socioeconomic characteristics play a the biggest role in determining an individual's income group. Using SHAP analysis, our findings show that of the features in our model,  Marital Status, Age & Education are the biggest drivers of a High Income output. 
+
+While the Logistic Regression classifier was chosen to easier identify the socioeconomic features that are drivers of high income, we see an opportunity to use an ensemble model such as Random Forest Classification to improve the model's prediction metrics. We also note the limitation of our findings that the strongest economic indicators for wealth are limited only to the features that were available to us in the dataset. There presents an opportunity to further explore what other indicators are stronger predictors through addition of more features, or feature engineering of the present features with a subject matter expert.
+
 
 # Repository Structure 
 
@@ -30,7 +37,7 @@ You can run the project in two ways:
 Both options assume you start in the project root (the folder that
 contains this README).
 
-Ensure that you have Git installed on your machine. First, clone the repository to your local machine by openning your terminal and run the following commands:
+Ensure that you have Git installed on your machine. First, clone the repository to your local machine by opening your terminal and run the following commands:
 
 ``` bash
 git clone https://github.com/lukeni777/522-group33-income-indicators.git
@@ -299,27 +306,31 @@ how to run it individually from the command line.
 
 ---
 # Dependencies
-  - conda==23.11.0
-  - python=3.9
-  - pandas==2.2.1
-  - jupyterlab==4.0.10
-  - numpy==1.26.4
-  - scikit-learn==1.4.0
-  - matplotlib==3.8.2
-  - shap==0.39.0
+  - python=3.12.12
+  - pandas=2.2
+  - jupyterlab=4.0
+  - numpy=1.26
+  - scikit-learn=1.7.2
+  - matplotlib=3.10.8
+  - pandera-pandas=0.27.0
+  - scipy=1.16.3
+  - shap=0.48.0  
   - tabulate=0.9.0
-  - pip==24.0
-  - altair=5.3.0
-  - ucimlrepo
-  - vegafusion-python-embed=1.6.9
-  - vegafusion=1.6.9 
-  - vl-convert-python=1.7.0
-  - altair_ally>=0.1.1 
-  - quarto=1.8.26
-  - make=4.3
+  - pip=25.3
+  - altair=5.5
+  - vl-convert-python=1.8.0 
   - conda-lock=3.0.4
+  - pip:
+      - ucimlrepo==0.0.7 
+      - altair_ally==0.1.1 
+      - vegafusion-python-embed==1.6.9 
+      - vegafusion==1.6.9 
+      - quarto-cli==1.8.26
+      - pytest==9.0.1
+      - pytest-mock==3.15.1
+      - pytest-cov==7.0.0
 
 # License Information
-This project is licensed under the terms of the MIT Licence, offered under the [MIT open source license](https://opensource.org/license/MIT). See the [LICENSE.md](https://github.com/lukeni777/522-group33-income-indicators/blob/main/LICENSE) file for more information.
+This project is licensed under the terms of the MIT License, offered under the [MIT open source license](https://opensource.org/license/MIT). See the [LICENSE.md](https://github.com/lukeni777/522-group33-income-indicators/blob/main/LICENSE) file for more information.
 
 Report text and figures: Creative Commons Attribution 4.0 International (CC BY 4.0) (see `LICENSE.md`)
