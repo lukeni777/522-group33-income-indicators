@@ -22,7 +22,8 @@ dependencies:
       - vegafusion-python-embed==1.6.9 #Must be same version as vegafusion below to prevent crashing
       - vegafusion==1.6.9 # Must be same version as vegafusion above to prevent crashing
       - quarto-cli==1.8.26
+      - pygments==2.18.0
       - pytest==9.0.1
       - pytest-mock==3.15.1
       - pytest-cov==7.0.0
-      
+
