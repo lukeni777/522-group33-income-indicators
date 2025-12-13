@@ -318,7 +318,8 @@ class DataValidator:
 
 @click.command()
 @click.option('--in_file', default="data/raw/adult_census_data.csv", help="Input raw file")
-def main(in_file):
+@click.option('--out_dir', default="data/processed", help="Processed output directory")
+def main(in_file, out_dir):
     # Read & Transform Data for Validation
     print("Loading data for validation...")
     adult_df = pd.read_csv(in_file)
@@ -380,8 +381,8 @@ def main(in_file):
     adult_train, adult_test = train_test_split(adult_df, test_size=0.3, random_state=522)
 
     # Store Cleaned Data in processed data directory
-    adult_train.to_csv(os.path.join("data", "processed", "adult_census_training_data.csv"), index=False)
-    adult_test.to_csv(os.path.join("data", "processed", "adult_census_test_data.csv"), index=False)
+    adult_train.to_csv(os.path.join(out_dir, "adult_census_training_data.csv"), index=False)
+    adult_test.to_csv(os.path.join(out_dir, "adult_census_test_data.csv"), index=False)
     print("Cleaned training and test data saved to 'data/processed/' directory.")
 
 import os
