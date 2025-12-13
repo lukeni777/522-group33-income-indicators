@@ -15,6 +15,19 @@ X_sample = pd.DataFrame({'X1': np.random.randint(3, 20, 10),
                          'X3': np.random.randint(15, 50, 10)})
 y_sample = np.ones(10)
 def test_cross_val_model_results_single():
+    """
+    Test the cross_val_model_results function for correct output structure.
+    
+    This test verifies that the cross_val_model_results function returns a 
+    properly formatted DataFrame with the expected structure when provided with
+    a basic estimator and sample data.
+    
+    Test Conditions
+    ---------------
+    - Uses LinearRegression as a sample estimator
+    - Uses pre-defined sample data (X_sample, y_sample)
+    - Uses 'accuracy' as the scoring metric
+    """
     out_sample_single = cross_val_model_results(estimator=LinearRegression(), 
                                          X_train=X_sample,
                                          y_train=y_sample,
