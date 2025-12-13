@@ -80,13 +80,23 @@ class DataValidator:
     """
 
     def __init__(self, df: pd.DataFrame):
+        """
+        Initialize a new DataValidator instance.
+
+        Args:
+            df (pd.DataFrame): dataframe to perform validation on.
+        """
         self.df = df
         self.missing_threshold: float = 0.05 # 5% missingness threshold
         self.tolerance: float = 0.05 # 5% Target distribution tolerance
         self.threshold: float = 0.8 # 80% correlation threshold
 
     def validate_all(self, expected_dist):
-        """Run all validation checks."""
+        """Run all validation checks.
+        
+        Args:
+            expected_dist: dictionary of format {"<=50K": 0.80, ">50K": 0.20} with expected distribution of target.
+        """
         print("--- Starting Data Validation Checks ---")
         self.check_column_structure_and_types()
         self.check_for_empty_observations()
@@ -101,7 +111,12 @@ class DataValidator:
 
     ## 1 & 2. Correct column names and data types - Pandera
     def check_column_structure_and_types(self):
-        
+        """
+        Check dataframe for column names and data types
+
+        Raises:
+            DataValidationError: If the column names and critical data types are incorrect.
+        """
         try:
             # Validation based on the global schema
             COLUMN_AND_TYPE_SCHEMA.validate(self.df, lazy=True)
@@ -118,7 +133,12 @@ class DataValidator:
 
     ## 3. No empty observations (row check)
     def check_for_empty_observations(self):
-        
+        """
+        Check dataframe for empty observations
+
+        Raises:
+            DataValidationError: If there are rows with entirely empty observations.
+        """
         empty_rows_count = self.df.isnull().all(axis=1).sum()
         
         if empty_rows_count > 0:
@@ -129,7 +149,12 @@ class DataValidator:
 
     ## 4. Missingness not beyond expected threshold (column check - 5%)
     def check_missingness_threshold(self):
-        
+        """
+        Check dataframe for missingness within a specified threshold
+
+        Raises:
+            DataValidationError: If missingness in all columns is not within specified threshold.
+        """
         missing_percent = self.df.isnull().sum() / len(self.df)
         
         exceeding_cols = missing_percent[missing_percent > self.missing_threshold]
@@ -145,7 +170,15 @@ class DataValidator:
     ## 5. Correct data file format and existence
     @staticmethod
     def check_file_format_and_existence(file_path: str):
-    
+        """
+        Check if the input file exists and is of the correct format
+
+        Parameter:
+            file_path: str of the format "data/raw/adult_census_data.txt"
+
+        Raises:
+            DataValidationError: if File is not found or of the wrong format.
+        """
         if not os.path.exists(file_path):
              raise DataValidationError(f"File not found: {file_path}. Expected a CSV file.")
         
@@ -158,7 +191,12 @@ class DataValidator:
         
     ## 6. No duplicate observations
     def check_for_duplicate_observations(self):
-        
+        """
+        Check for duplicate observations
+
+        Raises:
+            DataValidationError: if rows are found with duplicate observations.
+        """
         duplicate_rows_count = self.df.duplicated().sum()
 
         if duplicate_rows_count > 0:
@@ -168,9 +206,14 @@ class DataValidator:
 
     ## 7. No outlier or anomalous values
     def check_for_outliers(self):
+        """
+        Check for outlier or anomalous values
 
+        Raises:
+            DataValidationError: if rows are found with outlires using IQR.
+        """
         # numeric columns to check outliers from
-        #numeric_cols = self.df.select_dtypes(include=['number']).columns
+        # numeric_cols = self.df.select_dtypes(include=['number']).columns
         columns_with_outliers = []
 
         # Using IQR method (Interquartile range) for outliers
@@ -192,8 +235,13 @@ class DataValidator:
 
     ## 8. Correct category levels (i.e., no string mismatches or single values)
     def check_category_levels(self):
-        
-        category_cols = self.df.select_dtypes(include=['object']).columns
+        """
+        Check for correct category levels
+
+        Raises:
+            DataValidationError: if there are anomalies in categorical columns.
+        """
+        #category_cols = self.df.select_dtypes(include=['object']).columns
         column_with_anomalies = []
 
         for col,allowed_levels in category_levels.items():
@@ -214,7 +262,15 @@ class DataValidator:
 
     ## 9. Target/response variable follows expected distribution
     def check_target_distribution(self, expected_dist):
-        
+        """
+        Check for the distribution of target/response variable
+
+        Parameter:
+            expected_dist: a dictionary of the format {"<=50K": 0.80, ">50K": 0.20}
+
+        Raises:
+            DataValidationError: if target distribution does NOT match expected distribution.
+        """
         if target_col not in self.df.columns:
             raise ValueError(f"Target column '{target_col}' not found in DataFrame.")
 
@@ -238,7 +294,12 @@ class DataValidator:
 
     ## 10. No anomalous correlations between target/response variable and features/explanatory variables
     def check_target_feature_correlation(self):
-        
+        """
+        Check for no anomalous correlations between target/response variable and features/explanatory variables
+
+        Raises:
+            DataValidationError: if there is anomalous correlations between target and numeric features.
+        """
         if target_col not in self.df.columns:
             raise ValueError(f"Target column '{target_col}' not found in DataFrame.")
 
@@ -273,6 +334,12 @@ class DataValidator:
 
     ## 11. No anomalous correlations between features/explanatory variables 
     def check_feature_correlations(self):
+        """
+        Check for no anomalous correlations between features/explanatory variables
+
+        Raises:
+            DataValidationError: if there is anomalous correlations between features.
+        """
         # Select numeric columns
         numeric_cols = self.df.select_dtypes(include=['number']).columns.tolist()
         
