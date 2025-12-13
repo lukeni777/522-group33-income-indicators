@@ -208,3 +208,5 @@ __marimo__/
 
 # MacOS Custom Files
 .DS_Store
+/.quarto/
+**/*.quarto_ipynb
