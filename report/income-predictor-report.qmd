@@ -8,14 +8,14 @@ format:
         toc: true
         toc-expand: true
         toc-depth: 3
-    pdf: 
+    typst:
         toc: true
-        toc-expand: true
         toc-depth: 3
-        lof: true
-        lot: true
-        documentclass: article
-        geometry: margin=1in
+        number-sections: true
+        papersize: "us-letter"
+        margin:
+            x: 1in
+            y: 1in
 bibliography: references.bib
 execute:
     echo: false
@@ -153,7 +153,7 @@ We used SHAP values,summarized in @fig-shap, to interpret the model's decisions 
 - **Education:** Higher education-num consistently pushes predictions toward the >50K category.
 - **Hours per week:** Individuals investing more hours per week are overwhelmingly classified as high income.
 
-![Summary of High Impact features using SHAP](../results/figures/income_indicator_explainability.png){#fig-shap fig-align="left" height=45% }
+![Summary of High Impact features using SHAP](../results/figures/income_indicator_explainability.png){#fig-shap fig-align="center" width=100%}
 
 
 ### Conclusion
