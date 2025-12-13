@@ -1,7 +1,7 @@
 ---
 title: Predicting Income Category From Socioeconomic Characteristics
 author: Luke Ni, Michael Oyatsi, Nishanth Kumarasamy & Shruti Sasi 
-date: "2025/12/04"
+date: "2025/12/13"
 jupyter: python3
 format:
     html:
@@ -49,7 +49,7 @@ How is an individual's income affected by other socioeconomic factors? This is t
 
 In this analysis, we use machine learning to predict whether an individual's income is above or below $50,000. As the government sets out massive investment in Canadian societies to improve the lives of citizens(@housing_canada), we envision our analysis as a means of providing insights to the government as to what investments can drive the best chances of improving an individual's life. The persistent income and wealth inequality increase presents a strong case for prudent investing to improve lives across all Canadians. (@income_inequality)
 
-Note that while we use the features in this data to draw conclusions on the indicators of wealth, we also note that the socieconomic indicators noted in our report are only a subset of all possible indicators that could contribute to an indivduals wealth outcome. We acknowledge the assumptions put forward by our analysis and note that further inquest and findings are better placed to be performed in conjuction with an anthropologist or other better placed subject matter experts.  
+Note that while we use the features in this data to draw conclusions on the indicators of wealth, we also note that the socieconomic indicators noted in our report are only a subset of all possible indicators that could contribute to an individual's wealth outcome. We acknowledge the assumptions put forward by our analysis and note that further inquest and findings are better placed to be performed in conjunction with an anthropologist or other better placed subject matter experts.  
 
 ### Data
 
@@ -102,7 +102,7 @@ We also review the distribution of select categorical variables summarized in @f
 
 From the first histogram of `income` distribution, we can see that the dataset contains more records of low income earners compared to high income earners, a ration of about 3:1. 
 
-Reviewing the marital status of distribution, we can see that the distribution of high income earners is concentrated primarily on married respondents with scant representation the other marital status groups. Note that the orignal dataset contains 3 distinc married groups: `Married-AF-spouse` for respondents whose partners are in the Army, `Married-civ-spouse` for individuals married to civilian spouses & `Married-spouse-absent`. For simplification, all values have been combined into one variable `Married`. 
+Reviewing the marital status of distribution, we can see that the distribution of high income earners is concentrated primarily on married respondents with scant representation the other marital status groups. Note that the original dataset contains 3 distinct married groups: `Married-AF-spouse` for respondents whose partners are in the Army, `Married-civ-spouse` for individuals married to civilian spouses & `Married-spouse-absent`. For simplification, all values have been combined into one variable `Married`. 
 
 When analysing the `workclass` feature, a feature to classify the respondent's employer, we notice that high income earners are represented primarily in the private sector and less so in other employer categories. 
 
