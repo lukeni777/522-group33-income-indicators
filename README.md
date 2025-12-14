@@ -319,9 +319,9 @@ how to run it individually from the command line.
 # Testing
    To verify the analysis python packages in JupyterLab, open terminal and run:
 
-    ```bash
-    pytest test/
-    ```
+```bash 
+pytest test/
+```
 ---
 # Dependencies
   - python=3.12.12
