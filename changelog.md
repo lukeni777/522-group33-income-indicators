@@ -2,6 +2,8 @@
 
 All notable changes regarding peer review feedback will be documented in this file.
 
+More information about the project changes regarding TA feedback can be found at: https://github.com/lukeni777/522-group33-income-indicators/issues/36
+
 ## Changes
 
 - Pinned `altair_ally` (and other deps) to fixed versions using `=` in `environment.yml` to avoid future compatibility breaks.  
