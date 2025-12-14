@@ -94,6 +94,12 @@ To remove all generated files and start fresh, you can run:
 make clean
 ```
 
+We also provide `scratch` target that removes the old files before generating new documents and reports:
+
+```bash
+make scratch
+```
+
 ## Option B – Run the project with Docker
 
 Running with Docker allows you to use a pre-built image that already
@@ -111,7 +117,7 @@ From the project root, open a terminal and run:
 
 ``` bash
 # Pull the image from Docker Hub (this may take a few minutes)
-docker pull lukeni777/income-indicators:latest
+docker pull lukeni777/income-indicators:7b04a79
 ```
 
 ### 3. Run the container and start JupyterLab
@@ -164,7 +170,13 @@ To remove all generated files and start fresh, you can run:
 ``` bash
 make clean
 ```
+ OR
 
+To remove the old files before generating new documents and reports, run:
+
+```bash
+make scratch
+```
 ---
 
 ## Data analysis pipeline
@@ -303,7 +315,13 @@ how to run it individually from the command line.
      ```bash
      make clean
      ```
+---
+# Testing
+   To verify the analysis python packages in JupyterLab, open terminal and run:
 
+    ```bash
+    pytest test/
+    ```
 ---
 # Dependencies
   - python=3.12.12
