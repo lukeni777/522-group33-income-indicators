@@ -135,14 +135,14 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
   docker run --rm -p 8888:8888 \
     -v "$(pwd)":/workplace \
     -w /workplace \
-    lukeni777/income-indicators:latest
+    lukeni777/income-indicators:7b04a79
   unset MSYS_NO_PATHCONV
 else
   # macOS / Linux
   docker run --rm -p 8888:8888 \
     -v "$PWD":/workplace \
     -w /workplace \
-    lukeni777/income-indicators:latest
+    lukeni777/income-indicators:7b04a79
 fi
 ```
 
