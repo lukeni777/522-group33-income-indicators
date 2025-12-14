@@ -3,7 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: 522-group33-income-indicators:latest
+    image: 522-group33-income-indicators:7b04a79
+
     container_name: 522-group33-income-indicators
     ports:
       - "8888:8888"

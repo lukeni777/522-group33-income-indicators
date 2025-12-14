@@ -11,7 +11,14 @@ name: Publish Docker image
 
 on: 
   push: 
-
+   # trigger when any one of these files have been changed
+    paths:
+      - 'environment.yml'
+      - 'Dockerfile'
+      - 'conda-lock.yml'
+      - '.github/workflows/docker-build.yml'
+  # also allow manual trigger
+  workflow_dispatch:
       
 jobs:
   push_to_registry:
